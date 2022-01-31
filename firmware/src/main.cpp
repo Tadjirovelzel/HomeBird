@@ -8,13 +8,14 @@
 
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <WiFiManager.h>
 
 #include <PMserial.h> // Arduino library for PM sensors with serial interface
 
 SerialPM pms(PMS5003, 25, 26);
 
-const char* ssid = "Couperuslaan_111";
-const char* password = "111_naalsurepuoC";
+const char* ssid = "weatherstation";
+const char* password = "weatherstation";
 String serverName = "http://192.168.0.109:8000/";
 
 
@@ -22,21 +23,36 @@ File file;
 
 unsigned long count = 0;
 
+WiFiManager wm;
+
+
 // BME280 sensor module defective
 
 void setup() {
   I2C::init();
   BME280::init();
-  pms.init();
+  pms.init();;
 
   if (!SD.begin(4)) {
     printf("SD card initialization failed!\n");
   }
 
-  WiFi.begin(ssid, password);
+
+  WiFi.mode(WIFI_STA);
+  bool success = wm.autoConnect(ssid, password);
+  wm.setConfigPortalTimeout(60*10); //if WiFi is not found keep portal active for 10 minutes before shut down because of no clients connecting
+  if(success){
+    printf("Connected to WiFi!\n");
+  }else{
+    printf("Not able to connect to WiFi, the device will not work over WiFi\n");
+  }
+  pms.sleep();
 }
 
 void loop() {
+  pms.wake(); //wake pms
+  delay(30000); //wait for some air to flow, datasheet says 30 seconds
+
   count++;
   printf("---------------------\n");
   BME280::measure();
@@ -137,5 +153,6 @@ void loop() {
     http.end();
   }
 
-  delay(3000);
+  pms.sleep();
+  delay(30000);
 }
