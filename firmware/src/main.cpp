@@ -31,7 +31,7 @@ WiFiManager wm;
 void setup() {
   I2C::init();
   BME280::init();
-  pms.init();;
+  pms.init();
 
   if (!SD.begin(4)) {
     printf("SD card initialization failed!\n");

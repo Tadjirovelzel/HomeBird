@@ -45,13 +45,19 @@ def BME280_compensate_pressure(pressure, BME280_calibration_values):
     p = p + (var1 + var2 + (np.double(dig_P7))) / 16.0
     return p
 
-data = "4A6F5D673200E29011D6D00B811FA9FFF9FF8C3CF8C67017 80B9C0 4E97A0 00000109"
+
+##################################
+###########    MAIN    ###########
+##################################
+
+data = "4A6F5D673200E29011D6D00B811FA9FFF9FF8C3CF8C67017 80FF40 4C67B0 00000003000401E000870025000300020000 00000002"
 data = data.replace(" ", "")
 
 raw_BME280_calibration = data[0:24*2]
 raw_BME280_temperature = data[24*2:(24+3) * 2]
 raw_BME280_pressure = data[(24+3) * 2:(24+6) * 2]
-raw_count = data[(24+6) * 2: ]
+raw_PMS5003 = data[(24+6) * 2:(24+6) * 2 + 9 * 4]
+raw_count = data[(24+6) * 2 + 9 * 4: ]
 
 count = int(raw_count, 16)
 print("count", count)
@@ -65,5 +71,17 @@ BME280_pressure = np.frombuffer(bytes.fromhex("000"+ raw_BME280_pressure[:-1]), 
 temperature = BME280_compensate_temperature(BME280_temperature, BME280_calibration_values)
 pressure = BME280_compensate_pressure(BME280_pressure, BME280_calibration_values)
 
+type = np.dtype(np.uint16).newbyteorder(">")
+pm01, pm25, pm10, n0p3, n0p5, n1p0, n2p5, n5p0, n10p0 = np.frombuffer(bytes.fromhex(raw_PMS5003), dtype = type)
+
 print(f"temperature {temperature}")
 print(f"pressure {pressure}")
+print(f"pm01: {pm01}")
+print(f"pm25: {pm25}")
+print(f"pm10: {pm10}")
+print(f"n0p3: {n0p3}")
+print(f"n0p5: {n0p5}")
+print(f"n1p0: {n1p0}")
+print(f"n2p5: {n2p5}")
+print(f"n5p0: {n5p0}")
+print(f"n10p0: {n10p0}")

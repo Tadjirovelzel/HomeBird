@@ -3,10 +3,11 @@
 #include "Wire.h"
 #include "i2c.h"
 
-#include "SPI.h"
-#include "SD.h"
+#include <SPI.h>
+#include <SD.h>
+#include <EEPROM.h>
 
-#include <LowPower.h>
+#include "LowPower.h" // Library for deepsleep
 #include <PMserial.h> // Arduino library for PM sensors with serial interface
 
 File file;
@@ -15,7 +16,10 @@ SerialPM pms(PMS5003, 8, 9); //RX = 8, TX = 9
 
 String file_path = "/sensor_data.txt";
 
-unsigned long count = 0;
+////
+// EEPROM:
+//   register 0: state
+//   register 1: count
 
 void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure);
 void write_uint8_t_array_to_file_hex(File file, uint8_t* array, int length);
@@ -27,48 +31,57 @@ String uint16_t_to_hex(uint16_t data);
 String uint32_t_to_hex(uint32_t data);
 
 void setup() {
-  Serial.begin(115200);
-  I2C::init();
-  BME280::init();
-  pms.init();
-  pms.sleep();
+  switch(EEPROM.read(0)){
+    case 0:
+      pms.init();
+      pms.wake(); //wake pms
 
-  if (SD.begin(6)) {
-    Serial.println("SD card initialized");
-  }else{
-    Serial.println("SD card initialization failed!");
+      EEPROM.update(0, 1); //set state to state 1
+      LowPower.deepSleep(30000);
+      break;
+    case 2:
+
+      EEPROM.update(1, EEPROM.read(1) + 1); //count = count + 1
+      Serial.begin(115200);
+
+      if (SD.begin(6)) {
+        Serial.println("SD card initialized");
+      }else{
+        Serial.println("SD card initialization failed!");
+      }
+
+      pms.init();  //reinit, just to be sure
+      pms.wake();
+      pms.read();
+      pms.sleep();
+
+      BME280::init();
+      BME280::measure();
+      delay(1);
+      uint8_t BME280_calibration[24];
+      uint8_t BME280_temperature[3];
+      uint8_t BME280_pressure[3];
+      BME280::read_calibration(BME280_calibration);
+      BME280::read_temperature(BME280_temperature);
+      BME280::read_pressure(BME280_pressure);
+
+      Serial.println(uint8_t_array_to_string_hex(BME280_calibration, 24) + " " + uint8_t_array_to_string_hex(BME280_temperature, 3) + " " + uint8_t_array_to_string_hex(BME280_pressure, 3) + " " + uint16_t_array_to_string_hex(pms.data, 9) + " " + uint32_t_to_hex(EEPROM.read(1)));
+
+      write_to_file(BME280_calibration, BME280_temperature, BME280_pressure);
+
+      EEPROM.update(0, 0); //set state to state 0
+      LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+      break;
+    default:
+      //ERROR, program should not be able to reach this point, continue to recover
+      break;
   }
+  //ERROR, program should not be able to reach this point
+  EEPROM.update(0, 0); //recover to state 0
+  LowPower.deepSleep(1);
 }
 
 void loop() {
-  pms.init();
-  pms.wake(); //wake pms
-  // delay(1000); //give the system time to finish communication
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF); //wait for some air to flow, datasheet says 30 seconds
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  delay(30000);  //TODO: replace with powerDown
-  pms.read();
-  pms.sleep();
-
-  count++;
-  BME280::measure();
-  delay(1);
-  uint8_t BME280_calibration[24];
-  uint8_t BME280_temperature[3];
-  uint8_t BME280_pressure[3];
-  BME280::read_calibration(BME280_calibration);
-  BME280::read_temperature(BME280_temperature);
-  BME280::read_pressure(BME280_pressure);
-
-  Serial.println(uint8_t_array_to_string_hex(BME280_calibration, 24) + " " + uint8_t_array_to_string_hex(BME280_temperature, 3) + " " + uint8_t_array_to_string_hex(BME280_pressure, 3) + " " + uint16_t_array_to_string_hex(pms.data, 9) + " " + uint32_t_to_hex(count));
-
-  write_to_file(BME280_calibration, BME280_temperature, BME280_pressure);
-
-  delay(100); //give the system time to finish communication
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
 }
 
 void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure){
@@ -81,7 +94,7 @@ void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uin
     file.print(" ");
     write_uint16_t_array_to_file_hex(file, pms.data, 9);
     file.print(" ");
-    file.println(uint32_t_to_hex(count));
+    file.println(uint32_t_to_hex(EEPROM.read(1)));
     file.close();
   }
 }
