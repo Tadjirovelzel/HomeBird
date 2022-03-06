@@ -4,7 +4,7 @@
 ### Part One: Breadboard Prototype
 #### Arduino Firmware
 - ~~Get PowerDown fully working~~
-- Get BME280 fully working
+- ~~Get BME280 fully working~~
 - Include Time in file
 
 #### ESP32 firmware
@@ -13,6 +13,9 @@
 - Get camera working
 - Send camera data
 - Use 4g module to send data
+
+#### Python data interpreter
+- Parse humidity data (WIP)
 
 ### Part Two: PCB version
 

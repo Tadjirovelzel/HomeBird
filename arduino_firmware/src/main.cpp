@@ -19,7 +19,7 @@ unsigned long count = 0;
 
 void sleep_for_milliseconds(long sleep_time);
 void sleep_for_approx_milliseconds(long sleep_time);
-void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure);
+void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure, uint8_t* BME280_humidity);
 void write_uint8_t_array_to_file_hex(File file, uint8_t* array, int length);
 void write_uint16_t_array_to_file_hex(File file, uint16_t* array, int length);
 String uint8_t_array_to_string_hex(uint8_t* array, int length);
@@ -54,15 +54,22 @@ void loop() {
   count++;
   BME280::measure();
   delay(1);
-  uint8_t BME280_calibration[24];
+  uint8_t BME280_calibration[32];
   uint8_t BME280_temperature[3];
   uint8_t BME280_pressure[3];
+  uint8_t BME280_humidity[2];
   BME280::read_calibration(BME280_calibration);
   BME280::read_temperature(BME280_temperature);
   BME280::read_pressure(BME280_pressure);
+  BME280::read_humidity(BME280_humidity);
 
-  Serial.println(uint8_t_array_to_string_hex(BME280_calibration, 24) + " " + uint8_t_array_to_string_hex(BME280_temperature, 3) + " " + uint8_t_array_to_string_hex(BME280_pressure, 3) + " " + uint16_t_array_to_string_hex(pms.data, 9) + " " + uint32_t_to_hex(count));
-  write_to_file(BME280_calibration, BME280_temperature, BME280_pressure);
+  Serial.print(uint8_t_array_to_string_hex(BME280_calibration, 32));
+  Serial.print(" " + uint8_t_array_to_string_hex(BME280_temperature, 3));
+  Serial.print(" " + uint8_t_array_to_string_hex(BME280_pressure, 3));
+  Serial.print(" " + uint8_t_array_to_string_hex(BME280_humidity, 2));
+  Serial.print(" " + uint16_t_array_to_string_hex(pms.data, 9));
+  Serial.println(" " + uint32_t_to_hex(count));
+  write_to_file(BME280_calibration, BME280_temperature, BME280_pressure, BME280_humidity);
 
   delay(100); //give the system time to finish communication
   sleep_for_approx_milliseconds(10000); //No interrupts should occur, which means using this function is fine
@@ -84,13 +91,15 @@ void sleep_for_approx_milliseconds(long sleep_time){
   }
 }
 
-void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure){
+void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure, uint8_t* BME280_humidity){
   if(file = SD.open(file_path, FILE_WRITE)){
-    write_uint8_t_array_to_file_hex(file, BME280_calibration, 24);
+    write_uint8_t_array_to_file_hex(file, BME280_calibration, 32);
     file.print(" ");
     write_uint8_t_array_to_file_hex(file, BME280_temperature, 3);
     file.print(" ");
     write_uint8_t_array_to_file_hex(file, BME280_pressure, 3);
+    file.print(" ");
+    file.print(uint8_t_array_to_string_hex(BME280_humidity, 2));
     file.print(" ");
     write_uint16_t_array_to_file_hex(file, pms.data, 9);
     file.print(" ");
