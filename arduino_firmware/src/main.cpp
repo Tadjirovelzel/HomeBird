@@ -17,6 +17,8 @@ String file_path = "/sensor_data.txt";
 
 unsigned long count = 0;
 
+void sleep_for_milliseconds(long sleep_time);
+void sleep_for_approx_milliseconds(long sleep_time);
 void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure);
 void write_uint8_t_array_to_file_hex(File file, uint8_t* array, int length);
 void write_uint16_t_array_to_file_hex(File file, uint16_t* array, int length);
@@ -40,15 +42,12 @@ void setup() {
   }
 }
 
+long startTime = 0;
+
 void loop() {
   pms.init();
-  pms.wake(); //wake pms
-  // delay(1000); //give the system time to finish communication
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF); //wait for some air to flow, datasheet says 30 seconds
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  // LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  delay(30000);  //TODO: replace with powerDown
+  pms.wake();
+  sleep_for_milliseconds(32000);  //wait for some air to flow, datasheet says 30 seconds. but this function is a bit fast when pms is awake (the softwareserial interrupt stops a block early) so add a few seconds to be safe
   pms.read();
   pms.sleep();
 
@@ -63,12 +62,26 @@ void loop() {
   BME280::read_pressure(BME280_pressure);
 
   Serial.println(uint8_t_array_to_string_hex(BME280_calibration, 24) + " " + uint8_t_array_to_string_hex(BME280_temperature, 3) + " " + uint8_t_array_to_string_hex(BME280_pressure, 3) + " " + uint16_t_array_to_string_hex(pms.data, 9) + " " + uint32_t_to_hex(count));
-
   write_to_file(BME280_calibration, BME280_temperature, BME280_pressure);
 
   delay(100); //give the system time to finish communication
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
-  LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  sleep_for_approx_milliseconds(10000); //No interrupts should occur, which means using this function is fine
+}
+
+// Less efficient, but more accurate when interrupts may occur
+// wake up every 15ms then go back to sleep untill time is up
+void sleep_for_milliseconds(long sleep_time){ 
+  for(int i = 0; i < (sleep_time/15); i++){ 
+    LowPower.powerDown(SLEEP_15MS, ADC_OFF, BOD_ON);
+  }
+}
+
+//more efficient, but WAY (!) less accurate when interrupts may occur
+//wake up every second then go back to sleep untill time is up
+void sleep_for_approx_milliseconds(long sleep_time){ 
+  for(int i = 0; i < (sleep_time / 1000); i++){ 
+    LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_ON);
+  }
 }
 
 void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure){
