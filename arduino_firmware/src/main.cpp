@@ -9,11 +9,11 @@
 #include <LowPower.h>
 #include <PMserial.h> // Arduino library for PM sensors with serial interface
 
-File file;
+#define INTERRUPT_OUTPUT_PIN 4
 
 SerialPM pms(PMS5003, 8, 9); //RX = 8, TX = 9
 
-String file_path = "/sensor_data.txt";
+String time;
 
 unsigned long count = 0;
 
@@ -30,16 +30,14 @@ String uint32_t_to_hex(uint32_t data);
 
 void setup() {
   Serial.begin(115200);
+  Serial.setTimeout(1000);
+
   I2C::init();
   BME280::init();
   pms.init();
   pms.sleep();
 
-  if (SD.begin(6)) {
-    Serial.println("SD card initialized");
-  }else{
-    Serial.println("SD card initialization failed!");
-  }
+  pinMode(INTERRUPT_OUTPUT_PIN, OUTPUT);
 }
 
 long startTime = 0;
@@ -47,9 +45,15 @@ long startTime = 0;
 void loop() {
   pms.init();
   pms.wake();
+  digitalWrite(INTERRUPT_OUTPUT_PIN, false);
   sleep_for_milliseconds(32000);  //wait for some air to flow, datasheet says 30 seconds. but this function is a bit fast when pms is awake (the softwareserial interrupt stops a block early) so add a few seconds to be safe
+  digitalWrite(INTERRUPT_OUTPUT_PIN, true);
   pms.read();
   pms.sleep();
+
+  if(Serial.available() > 0){
+    time = Serial.readStringUntil('\n');
+  }
 
   count++;
   BME280::measure();
@@ -63,6 +67,8 @@ void loop() {
   BME280::read_pressure(BME280_pressure);
   BME280::read_humidity(BME280_humidity);
 
+  Serial.print(String(time));
+  Serial.print(" ");
   Serial.print(uint8_t_array_to_string_hex(BME280_calibration, 32));
   Serial.print(" " + uint8_t_array_to_string_hex(BME280_temperature, 3));
   Serial.print(" " + uint8_t_array_to_string_hex(BME280_pressure, 3));
@@ -92,20 +98,30 @@ void sleep_for_approx_milliseconds(long sleep_time){
 }
 
 void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uint8_t* BME280_pressure, uint8_t* BME280_humidity){
-  if(file = SD.open(file_path, FILE_WRITE)){
-    write_uint8_t_array_to_file_hex(file, BME280_calibration, 32);
-    file.print(" ");
-    write_uint8_t_array_to_file_hex(file, BME280_temperature, 3);
-    file.print(" ");
-    write_uint8_t_array_to_file_hex(file, BME280_pressure, 3);
-    file.print(" ");
-    file.print(uint8_t_array_to_string_hex(BME280_humidity, 2));
-    file.print(" ");
-    write_uint16_t_array_to_file_hex(file, pms.data, 9);
-    file.print(" ");
-    file.println(uint32_t_to_hex(count));
-    file.close();
+  if(SD.begin(6)){
+    File file = SD.open("data.txt", FILE_WRITE); //A name that is too long gives errors!
+    if(file){
+      file.print(String(time));
+      file.print(" ");
+      write_uint8_t_array_to_file_hex(file, BME280_calibration, 32);
+      file.print(" ");
+      write_uint8_t_array_to_file_hex(file, BME280_temperature, 3);
+      file.print(" ");
+      write_uint8_t_array_to_file_hex(file, BME280_pressure, 3);
+      file.print(" ");
+      file.print(uint8_t_array_to_string_hex(BME280_humidity, 2));
+      file.print(" ");
+      write_uint16_t_array_to_file_hex(file, pms.data, 9);
+      file.print(" ");
+      file.println(uint32_t_to_hex(count));
+      file.close();
+    }else{
+      Serial.println("error opening file");
+    }
+  }else{
+    Serial.println("SD couldn't initialize");
   }
+  SD.end();
 }
 
 void write_uint8_t_array_to_file_hex(File file, uint8_t* array, int length){

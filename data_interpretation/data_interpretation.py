@@ -14,16 +14,11 @@ def BME280_decode_calibrate(raw_BME280_calibration):
 
     # turn last char into short
     raw_BME280_calibration = raw_BME280_calibration[:68] + '00' + raw_BME280_calibration[68:]
-
-    for i, x in enumerate(raw_BME280_calibration):
-      print(i,x)
     
     # put unsigned into its own array
     unsigned_BME280_calibration_indexes = [0,1,2,3, 12,13,14,15, 48,49,50,51, 56,57,58,59]
     unsigned_BME280_calibration = ''.join([raw_BME280_calibration[i] for i in unsigned_BME280_calibration_indexes])
     signed_BME280_calibration = ''.join([raw_BME280_calibration[i] for i in range(0, 72) if not i in unsigned_BME280_calibration_indexes])
-
-    print(unsigned_BME280_calibration)
 
     # convert to numbers
     signed_type = np.dtype(np.int16).newbyteorder("<")
@@ -72,16 +67,14 @@ def BME280_compensate_humidity(humidity, BME280_calibration_values):
     dig_H1, dig_H3 = BME280_calibration_values[1][2:4]
     dig_H2, dig_H4, dig_H5, dig_H6 = BME280_calibration_values[0][10:15]
 
-    print(dig_H1, dig_H3, dig_H2, dig_H4, dig_H5, dig_H6)
-
     # formulas from BME280 datasheet
     var_H = ((np.double(t_fine)) - 76800.0)
     var_H = (humidity - ((np.double(dig_H4)) * 64.0 + (np.double(dig_H5)) / 16384.0 * var_H)) * ((np.double(dig_H2)) / 65536.0 * (1.0 + (np.double(dig_H6)) / 67108864.0 * var_H * (1.0 + (np.double(dig_H3)) / 67108864.0 * var_H)))
     var_H = var_H * (1.0 - (np.double(dig_H1)) * var_H / 524288.0)
-    # if (var_H > 100.0):
-    #     var_H = 100.0
-    # elif (var_H < 0.0):
-    #     var_H = 0.0
+    if (var_H > 100.0):
+        var_H = 100.0
+    elif (var_H < 0.0):
+        var_H = 0.0
     return var_H
 
 
@@ -89,7 +82,7 @@ def BME280_compensate_humidity(humidity, BME280_calibration_values):
 ###########    MAIN    ###########
 ##################################
 
-data = "CC6D726732008F8F3DD6D00B0F252AFFF9FFAC260AD8BD104B7A0100112A031E 816530 47C180 5741 00020003000501CE00830019000800010000 0000003B"
+data = "CC6D726732008F8F3DD6D00B0F252AFFF9FFAC260AD8BD104B7A0100112A031E7F86A04941D05CF300040008000C03EA011E0035000C0000000000000006"
 data = data.replace(" ", "")
 
 raw_BME280_calibration = data[0:32*2]
@@ -109,7 +102,6 @@ BME280_temperature = np.frombuffer(bytes.fromhex("000" + raw_BME280_temperature[
 BME280_pressure = np.frombuffer(bytes.fromhex("000"+ raw_BME280_pressure[:-1]), dtype = type)[0]
 type = np.dtype(np.int16).newbyteorder(">")
 BME280_humidity = np.frombuffer(bytes.fromhex(raw_BME280_humidity), dtype = type)[0]
-print(BME280_humidity)
 
 temperature = BME280_compensate_temperature(BME280_temperature, BME280_calibration_values)
 pressure = BME280_compensate_pressure(BME280_pressure, BME280_calibration_values)
