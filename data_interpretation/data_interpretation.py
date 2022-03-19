@@ -1,4 +1,5 @@
 import numpy as np
+from datetime import datetime
 
 t_fine = 0
 
@@ -82,9 +83,11 @@ def BME280_compensate_humidity(humidity, BME280_calibration_values):
 ###########    MAIN    ###########
 ##################################
 
-data = "CC6D726732008F8F3DD6D00B0F252AFFF9FFAC260AD8BD104B7A0100112A031E7F86A04941D05CF300040008000C03EA011E0035000C0000000000000006"
+data = "0000000062360AAECC6D726732008F8F3DD6D00B0F252AFFF9FFAC260AD8BD104B7A0100112A031E7F1330458BB057D200000000000200780025000800060000000000000009"
 data = data.replace(" ", "")
 
+raw_time = data[0:16]
+data = data[16:-1]
 raw_BME280_calibration = data[0:32*2]
 raw_BME280_temperature = data[32*2:(32+3) * 2]
 raw_BME280_pressure = data[(32+3) * 2:(32+6) * 2]
@@ -122,3 +125,6 @@ print(f"n1p0: {n1p0}")
 print(f"n2p5: {n2p5}")
 print(f"n5p0: {n5p0}")
 print(f"n10p0: {n10p0}")
+
+time = int(raw_time, 16)
+print("time:", datetime.utcfromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S'), "(" + str(time) + ")")

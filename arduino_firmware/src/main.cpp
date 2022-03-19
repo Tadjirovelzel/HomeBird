@@ -27,9 +27,10 @@ String uint16_t_array_to_string_hex(uint16_t* array, int length);
 String uint8_t_to_hex(uint8_t data);
 String uint16_t_to_hex(uint16_t data);
 String uint32_t_to_hex(uint32_t data);
+String uint64_t_to_hex(uint64_t data);
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200, SERIAL_8N1);
   Serial.setTimeout(1000);
 
   I2C::init();
@@ -47,10 +48,12 @@ void loop() {
   pms.wake();
   digitalWrite(INTERRUPT_OUTPUT_PIN, false);
   sleep_for_milliseconds(32000);  //wait for some air to flow, datasheet says 30 seconds. but this function is a bit fast when pms is awake (the softwareserial interrupt stops a block early) so add a few seconds to be safe
+  delay(50); //give uart time to receive
   digitalWrite(INTERRUPT_OUTPUT_PIN, true);
   pms.read();
   pms.sleep();
 
+  time = "";
   if(Serial.available() > 0){
     time = Serial.readStringUntil('\n');
   }
@@ -67,7 +70,7 @@ void loop() {
   BME280::read_pressure(BME280_pressure);
   BME280::read_humidity(BME280_humidity);
 
-  Serial.print(String(time));
+  Serial.print(uint64_t_to_hex(time.toInt()));
   Serial.print(" ");
   Serial.print(uint8_t_array_to_string_hex(BME280_calibration, 32));
   Serial.print(" " + uint8_t_array_to_string_hex(BME280_temperature, 3));
@@ -101,7 +104,7 @@ void write_to_file(uint8_t* BME280_calibration, uint8_t* BME280_temperature, uin
   if(SD.begin(6)){
     File file = SD.open("data.txt", FILE_WRITE); //A name that is too long gives errors!
     if(file){
-      file.print(String(time));
+      file.print(uint64_t_to_hex(time.toInt()));
       file.print(" ");
       write_uint8_t_array_to_file_hex(file, BME280_calibration, 32);
       file.print(" ");
@@ -152,6 +155,10 @@ String uint16_t_array_to_string_hex(uint16_t* array, int length){
 
 String uint8_t_to_hex(uint8_t data){
   return (String("0123456789ABCDEF"[data >> 4]) + String("0123456789ABCDEF"[data & 0x0F]));
+}
+
+String uint64_t_to_hex(uint64_t data){
+  return uint32_t_to_hex(data >> 32) + uint32_t_to_hex(data);
 }
 
 String uint32_t_to_hex(uint32_t data){

@@ -5,7 +5,7 @@
 #### Arduino Firmware
 - ~~Get PowerDown fully working~~
 - ~~Get BME280 fully working~~
-- Include Time in file
+- ~~Include Time in file~~
 - Add second BME280
 
 #### ESP32 firmware
@@ -19,7 +19,7 @@
 - ~~Parse humidity data~~
 
 #### Bug Fixes
-- fix time reading bug (probably disable esp data printing)
+- ~~fix time reading bug (probably disable esp data printing)~~
 
 ### Part Two: PCB version
 
