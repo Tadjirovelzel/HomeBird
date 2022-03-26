@@ -2,12 +2,12 @@
 #define BME280_H
 
 namespace BME280 {
-    void init();
-    void measure();
-    void read_calibration(uint8_t*);
-    void read_temperature(uint8_t*);
-    void read_pressure(uint8_t*);
-    void read_humidity(uint8_t*);
+    void init(int);
+    void measure(int);
+    void read_calibration(int, uint8_t*);
+    void read_temperature(int, uint8_t*);
+    void read_pressure(int, uint8_t*);
+    void read_humidity(int, uint8_t*);
 };
 
 #endif

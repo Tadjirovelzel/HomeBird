@@ -6,17 +6,20 @@
 - ~~Get PowerDown fully working~~
 - ~~Get BME280 fully working~~
 - ~~Include Time in file~~
-- Add second BME280
+- ~~Add second BME280~~
 
 #### ESP32 firmware
 - ~~Communicate with Arduino~~
 - ~~Get the time~~
-- Get camera working
-- Send camera data
+- ~~Get camera working~~
+- ~~Send camera data~~
 - Use 4g module to send data
+- Clean up code
+- Optimize power consumption
 
 #### Python data interpreter
 - ~~Parse humidity data~~
+- ~~Show images~~
 
 #### Bug Fixes
 - ~~fix time reading bug (probably disable esp data printing)~~
