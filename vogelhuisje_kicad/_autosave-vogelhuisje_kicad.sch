@@ -14,11 +14,12 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Sheet
-S 1850 1800 2700 2400
+S 1700 2300 1300 850 
 U 6263B8AD
 F0 "Power Supply" 50
 F1 "Power_supply.sch" 50
-F2 "5V" I R 4550 2700 50 
+F2 "5V" I R 3000 2550 50 
+F3 "GND" I R 3000 2850 50 
 $EndSheet
 $Sheet
 S 5450 1800 5100 4200
