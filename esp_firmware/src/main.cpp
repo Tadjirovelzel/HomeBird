@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <SoftwareSerial.h>
+#include <StreamDebugger.h>
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -15,6 +17,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#define TINY_GSM_MODEM_SIM7600
+#include <TinyGsmClient.h>
+
 #ifndef portTICK_RATE_MS
 #define portTICK_RATE_MS portTICK_PERIOD_MS
 #endif
@@ -29,6 +34,16 @@ void init_cam();
 void clear_image_buf(camera_fb_t* pic);
 camera_fb_t* take_image();
 static esp_err_t init_camera();
+void setupModem();
+
+// define modem pins
+#define PIN_TX                  27
+#define PIN_RX                  26
+#define UART_BAUD               115200
+#define PWR_PIN                 4
+#define LED_PIN                 12
+#define POWER_PIN               25
+#define IND_PIN                 36
 
 
 // define the number of bytes you want to access
@@ -61,7 +76,9 @@ static esp_err_t init_camera();
 
 const char* ssid = "weatherstation";
 const char* password = "weatherstation";
-String serverName = "http://192.168.0.109:8000/";
+String serverName = "http://217.100.187.158:2718/";
+String serverAddress = "217.100.187.158";
+const int serverPort = 2718;
 
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 0;
@@ -74,12 +91,49 @@ WiFiManager wm;
 bool camera_OK = false;
 camera_fb_t *pic;
 
+// SoftwareSerial SerialAT(PIN_RX, PIN_TX);
+// StreamDebugger debugger(Serial1, Serial);
+TinyGsm modem(Serial1);
+TinyGsmClient client(modem);
+String APN = "smartsites.t-mobile";
+String simPIN = "0000";
+
 
 void setup() {
-  Serial.begin(2000000);
+  Serial.begin(115200);
 
   Serial2.begin(115200, SERIAL_8N1, 14, 12);
   Serial2.setTimeout(1000);
+
+  Serial1.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
+  // TinyGsmAutoBaud(SerialAT, 9600, 10000000);
+  setupModem();
+  modem.setNetworkMode(13);
+  modem.restart();
+  String modemInfo = modem.getModemInfo();
+  printf("Modem Info: %s\n", modemInfo.c_str());
+  
+  // Unlock your SIM card with a PIN if needed
+  if (strlen(simPIN.c_str()) && modem.getSimStatus() != 3 ) {
+    modem.simUnlock(simPIN.c_str());
+    printf("Pin filled in\n");
+  }
+
+  if (!modem.waitForNetwork()) {
+    delay(10000);
+    return;
+  }
+
+  if (modem.isNetworkConnected()) {
+    printf("Network connected\n");
+  }
+
+  printf("%d\n", modem.gprsConnect(APN.c_str()));
+  if (modem.isGprsConnected()) {
+    printf("GPRS connected\n");
+  }else{
+    printf("GPRS disconnected\n");
+  }
 
   pinMode(INTERRUPT_INPUT_PIN, INPUT_PULLUP);
   // attachInterrupt(INTERRUPT_INPUT_PIN, sendTime, RISING);
@@ -99,6 +153,28 @@ void setup() {
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
 }
+
+// https://github.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800/blob/master/examples/Arduino_TinyGSM/Arduino_TinyGSM.ino
+void setupModem()
+{
+  // Onboard LED light, it can be used freely
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
+
+  // POWER_PIN : This pin controls the power supply of the SIM7600
+  pinMode(POWER_PIN, OUTPUT);
+  digitalWrite(POWER_PIN, HIGH);
+
+  // PWR_PIN ： This Pin is the PWR-KEY of the SIM7600
+  // The time of active low level impulse of PWRKEY pin to power on module , type 500 ms
+  pinMode(PWR_PIN, OUTPUT);
+  digitalWrite(PWR_PIN, HIGH);
+  delay(500);
+  digitalWrite(PWR_PIN, LOW);
+
+  delay(10000);
+}
+
 
 // Function that gets current epoch time
 unsigned long getTime() {
@@ -170,6 +246,21 @@ void loop() {
     
     // Free resources
     http.end();
+
+    modem.sendAT(("+HTTPINIT"));// Initialize the HTTP service
+    if(modem.waitResponse(10000L) != 1) {
+      printf("%s\n", ("+HTTPINIT"));
+    }
+
+    modem.sendAT((String("+CHTTPACT=\"") + serverAddress + String("\",") + String(serverPort)));
+    if(modem.waitResponse(10000L) != 1) {
+      printf("%s\n", (String("+CHTTPACT=\"") + serverAddress + String("\",") + String(serverPort)).c_str());
+    }
+
+    modem.sendAT((String("+CHTTPACT: REQUEST\r\nPOST http://") + String(serverAddress) + String(" HTTP/1.1\r\nHost: ") + serverAddress + String("\r\nContent-Length: ") + String(packetData.length()) + String("\r\n\r\n") + String(packetData) + String("\r\n")));
+    if(modem.waitResponse(10000L) != 1) {
+      Serial.print((String("+CHTTPACT: REQUEST\r\nPOST http://") + String(serverAddress) + String(" HTTP/1.1\r\nHost: ") + String("\r\nContent-Length: ") + String(packetData.length()) + String("\r\n\r\n") + String(packetData) + String("\r\n")));
+    }
   }
 }
 
@@ -231,14 +322,15 @@ void clear_image_buf(camera_fb_t* pic){
 }
 
 void init_cam(){
-  if(!camera_OK){
-    esp_err_t err = init_camera();
-    if(err == ESP_OK){
-      camera_OK = true;
-    }else{
-      printf("ESP camera error: %d\n", err);
-    }
-  }
+  // if(!camera_OK){
+  //   esp_err_t err = init_camera();
+  //   if(err == ESP_OK){
+  //     camera_OK = true;
+  //   }else{
+  //     printf("ESP camera error: %d\n", err);
+  //   }
+  // }
+  camera_OK = false;
 }
 
 static void sendTime(void* arg){
