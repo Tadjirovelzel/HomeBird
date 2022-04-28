@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 3
+Sheet 1 4
 Title ""
 Date ""
 Rev ""
@@ -14,16 +14,67 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Sheet
-S 1850 1800 2700 2400
+S 1700 2300 1300 850 
 U 6263B8AD
 F0 "Power Supply" 50
 F1 "Power_supply.sch" 50
-F2 "5V" I R 4550 2700 50 
+F2 "5V" I R 3000 2700 50 
+F3 "GND" I R 3000 2850 50 
+F4 "turn_on_boost_converter" I R 3000 2400 50 
+F5 "Vbat" I R 3000 2550 50 
 $EndSheet
 $Sheet
-S 5450 1800 5100 4200
+S 6300 1550 1400 2700
 U 6263B902
 F0 "Sensors and microcontrollers" 50
 F1 "ESP_arduino.sch" 50
+F2 "GND" I L 6300 1750 50 
+F3 "5V" I L 6300 1600 50 
+F4 "CSI_D0" I L 6300 2200 50 
+F5 "CSI_D1" I L 6300 2350 50 
+F6 "CSI_D2" I L 6300 2500 50 
+F7 "CSI_D3" I L 6300 2650 50 
+F8 "CSI_D4" I L 6300 2800 50 
+F9 "CSI_D5" I L 6300 2950 50 
+F10 "CSI_D6" I L 6300 3100 50 
+F11 "CSI_D7" I L 6300 3250 50 
+F12 "CSI_MCLK" I L 6300 3400 50 
+F13 "CSI_HSYNC" I L 6300 3550 50 
+F14 "CSI_VSYNC" I L 6300 3700 50 
+F15 "CAM_RST" I L 6300 3850 50 
+F16 "TWI_SCK" I L 6300 4000 50 
+F17 "TWI_SDA" I L 6300 4150 50 
+F18 "Vbat" I L 6300 2050 50 
+F19 "Turn_on_boost_converter" I L 6300 1900 50 
+$EndSheet
+Wire Wire Line
+	6300 1900 3300 1900
+Wire Wire Line
+	3300 1900 3300 2400
+Wire Wire Line
+	3300 2400 3000 2400
+Wire Wire Line
+	3000 2550 3400 2550
+Wire Wire Line
+	3400 2550 3400 2050
+Wire Wire Line
+	3400 2050 6300 2050
+Wire Wire Line
+	3000 2700 3500 2700
+Wire Wire Line
+	3500 2700 3500 1600
+Wire Wire Line
+	3500 1600 6300 1600
+Wire Wire Line
+	3000 2850 3600 2850
+Wire Wire Line
+	3600 2850 3600 1750
+Wire Wire Line
+	3600 1750 6300 1750
+$Sheet
+S 3850 3250 1150 1000
+U 626EFA13
+F0 "Camera Module" 50
+F1 "Camera_module.sch" 50
 $EndSheet
 $EndSCHEMATC

@@ -1,4 +1,4 @@
-16927608276531452
+16930910387258452
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -6090,6 +6090,13 @@ AMASS_XT60-M
 2
 2
 Components
+Breakout-6
+
+
+0
+6
+6
+Components
 DIP762W46P254L1930H533Q14B
 Original name <b>DIP762W46P254L1930H533Q14B</b><p>Max Component Height - 5.33mm
 
@@ -6103,6 +6110,13 @@ GenericBoostConverter
 0
 4
 4
+Components
+PinHeader_1x08_P2.54mm_Vertical_G7
+Through hole straight pin header, 1x08, 2.54mm pitch, single row
+Through hole pin header THT 1x08 2.54mm single row
+0
+8
+8
 Components
 TP4056breakout
 

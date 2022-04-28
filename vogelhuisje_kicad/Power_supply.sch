@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 2 3
+Sheet 2 4
 Title ""
 Date ""
 Rev ""
@@ -14,7 +14,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L TP4056-breakout:TP4056breakout P1
+L TP4056-breakout:TP4056breakout P?
 U 1 1 6263DE48
 P 2550 2300
 F 0 "P?" H 2575 2825 50  0000 C CNN
@@ -25,7 +25,7 @@ F 3 "" H 2500 2700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L TP4056-breakout:GenericBoostConverter P2
+L TP4056-breakout:GenericBoostConverter P?
 U 1 1 6263E192
 P 5450 2300
 F 0 "P?" H 5450 2715 50  0000 C CNN
@@ -36,7 +36,7 @@ F 3 "" H 5450 2450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R1
+L Device:R R?
 U 1 1 6263EAD6
 P 3600 2250
 F 0 "R?" H 3670 2296 50  0000 L CNN
@@ -51,7 +51,7 @@ Wire Wire Line
 Wire Wire Line
 	1950 1750 1950 2050
 $Comp
-L power:GND #PWR0101
+L power:GND #PWR?
 U 1 1 6263EF5E
 P 1950 2400
 F 0 "#PWR?" H 1950 2150 50  0001 C CNN
@@ -62,8 +62,6 @@ F 3 "" H 1950 2400 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3350 1400 3350 2300
-Wire Wire Line
 	3350 2300 3200 2300
 Wire Wire Line
 	3200 2450 3600 2450
@@ -72,31 +70,8 @@ Wire Wire Line
 Connection ~ 3600 2450
 Wire Wire Line
 	3600 1750 3850 1750
-Wire Wire Line
-	4200 1950 4200 2150
-Wire Wire Line
-	4200 2150 4850 2150
 $Comp
-L Device:D_Zener D1
-U 1 1 62643FC2
-P 3850 1900
-F 0 "D?" V 3896 1821 50  0000 R CNN
-F 1 "D_Zener" V 3805 1821 50  0000 R CNN
-F 2 "Diode_SMD:D_SMB_Handsoldering" H 3850 1900 50  0001 C CNN
-F 3 "~" H 3850 1900 50  0001 C CNN
-	1    3850 1900
-	0    -1   -1   0   
-$EndComp
-Connection ~ 3850 1750
-Wire Wire Line
-	3850 1750 3900 1750
-Wire Wire Line
-	3850 2050 3850 2150
-Wire Wire Line
-	3850 2150 4200 2150
-Connection ~ 4200 2150
-$Comp
-L Connector_Generic:Conn_01x02 J1
+L Connector_Generic:Conn_01x02 J?
 U 1 1 62647C4D
 P 3250 1200
 F 0 "J?" H 3168 875 50  0000 C CNN
@@ -112,30 +87,12 @@ Wire Wire Line
 	3200 2000 3250 2000
 Connection ~ 3250 2000
 Wire Wire Line
-	3250 2000 3250 1550
-Wire Wire Line
 	3600 1750 1950 1750
 Connection ~ 3600 1750
 Wire Wire Line
 	3250 2000 3250 2150
-Wire Wire Line
-	4200 1550 3250 1550
-Connection ~ 3250 1550
-Wire Wire Line
-	3250 1550 3250 1400
 $Comp
-L Device:Q_PMOS_GSD Q1
-U 1 1 6264EDFF
-P 4100 1750
-F 0 "Q?" H 4305 1796 50  0000 L CNN
-F 1 "Q_PMOS_GSD" H 4305 1705 50  0000 L CNN
-F 2 "Package_TO_SOT_SMD:SOT-23" H 4300 1850 50  0001 C CNN
-F 3 "~" H 4100 1750 50  0001 C CNN
-	1    4100 1750
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector:USB_C_Receptacle_USB2.0 J3
+L Connector:USB_C_Receptacle_USB2.0 J?
 U 1 1 62654366
 P 5100 3300
 F 0 "J?" V 5253 4029 50  0000 L CNN
@@ -173,7 +130,7 @@ Connection ~ 6050 2450
 Wire Wire Line
 	6050 2450 6200 2450
 $Comp
-L Connector:Conn_01x02_Female J2
+L Connector:Conn_01x02_Female J?
 U 1 1 62641E6A
 P 1650 2250
 F 0 "J?" H 1542 1925 50  0000 C CNN
@@ -194,7 +151,7 @@ Wire Wire Line
 	1950 2150 1950 2050
 Connection ~ 1950 2050
 $Comp
-L power:GND #PWR0102
+L power:GND #PWR?
 U 1 1 62647069
 P 3600 2450
 F 0 "#PWR?" H 3600 2200 50  0001 C CNN
@@ -205,7 +162,7 @@ F 3 "" H 3600 2450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:GND #PWR0103
+L power:GND #PWR?
 U 1 1 626475C4
 P 6200 2450
 F 0 "#PWR?" H 6200 2200 50  0001 C CNN
@@ -220,4 +177,81 @@ Wire Wire Line
 	6200 2450 6300 2450
 Text HLabel 6300 2450 2    50   Input ~ 0
 GND
+Wire Wire Line
+	3850 2050 3850 2150
+$Comp
+L Device:Q_PMOS_GSD Q?
+U 1 1 6264EDFF
+P 4400 1750
+F 0 "Q?" H 4605 1796 50  0000 L CNN
+F 1 "Q_PMOS_GSD" H 4605 1705 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 4600 1850 50  0001 C CNN
+F 3 "~" H 4400 1750 50  0001 C CNN
+	1    4400 1750
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:D_Zener D?
+U 1 1 62643FC2
+P 3850 1900
+F 0 "D?" V 3896 1821 50  0000 R CNN
+F 1 "D_Zener" V 3805 1821 50  0000 R CNN
+F 2 "Diode_SMD:D_SMB_Handsoldering" H 3850 1900 50  0001 C CNN
+F 3 "~" H 3850 1900 50  0001 C CNN
+	1    3850 1900
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4500 1950 4500 2150
+Connection ~ 4500 2150
+Wire Wire Line
+	4500 2150 4850 2150
+Wire Wire Line
+	3850 2150 4500 2150
+Wire Wire Line
+	3250 1400 3250 2000
+$Comp
+L Device:D D?
+U 1 1 626DAFFC
+P 4000 1750
+F 0 "D?" H 4000 1534 50  0000 C CNN
+F 1 "D" H 4000 1625 50  0000 C CNN
+F 2 "" H 4000 1750 50  0001 C CNN
+F 3 "~" H 4000 1750 50  0001 C CNN
+	1    4000 1750
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:D D?
+U 1 1 626DB777
+P 4200 1250
+F 0 "D?" V 4246 1171 50  0000 R CNN
+F 1 "D" V 4155 1171 50  0000 R CNN
+F 2 "" H 4200 1250 50  0001 C CNN
+F 3 "~" H 4200 1250 50  0001 C CNN
+	1    4200 1250
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4500 1550 3350 1550
+Wire Wire Line
+	3350 1400 3350 1550
+Connection ~ 3350 1550
+Wire Wire Line
+	3350 1550 3350 2300
+Connection ~ 3850 1750
+Wire Wire Line
+	4150 1750 4200 1750
+Wire Wire Line
+	4200 1400 4200 1750
+Connection ~ 4200 1750
+Text HLabel 6100 1100 2    50   Input ~ 0
+turn_on_boost_converter
+Text HLabel 6100 1550 2    50   Input ~ 0
+Vbat
+Wire Wire Line
+	4500 1550 6100 1550
+Connection ~ 4500 1550
+Wire Wire Line
+	4200 1100 6100 1100
 $EndSCHEMATC
