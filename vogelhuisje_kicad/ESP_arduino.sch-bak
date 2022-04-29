@@ -133,4 +133,126 @@ Wire Wire Line
 	3850 600  3850 650 
 Text HLabel 2000 3000 0    50   Input ~ 0
 Turn_on_boost_converter
+Wire Wire Line
+	2000 2850 2450 2850
+Wire Wire Line
+	2450 2850 2450 2450
+Wire Wire Line
+	2450 2450 2300 2450
+Wire Wire Line
+	5000 4650 5250 4650
+Wire Wire Line
+	5250 4650 5250 4100
+Wire Wire Line
+	5250 4100 6400 4100
+Wire Wire Line
+	5250 5050 6400 5050
+Wire Wire Line
+	5250 4650 5250 5050
+Connection ~ 5250 4650
+Wire Wire Line
+	5000 4750 5300 4750
+Wire Wire Line
+	5300 4750 5300 4200
+Wire Wire Line
+	5300 4200 6400 4200
+Wire Wire Line
+	5300 4750 5300 5150
+Wire Wire Line
+	5300 5150 5750 5150
+Connection ~ 5300 4750
+Text HLabel 2000 5400 0    50   Input ~ 0
+V_LED_switch-
+Text HLabel 2000 5550 0    50   Input ~ 0
+3V3
+Wire Wire Line
+	2000 5550 2900 5550
+Wire Wire Line
+	2900 5550 2900 4850
+Wire Wire Line
+	2900 4850 3500 4850
+$Comp
+L power:GND #PWR?
+U 1 1 626CC30D
+P 5750 5200
+F 0 "#PWR?" H 5750 4950 50  0001 C CNN
+F 1 "GND" H 5755 5027 50  0000 C CNN
+F 2 "" H 5750 5200 50  0001 C CNN
+F 3 "" H 5750 5200 50  0001 C CNN
+	1    5750 5200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5750 5200 5750 5150
+Connection ~ 5750 5150
+Wire Wire Line
+	5750 5150 6400 5150
+$Comp
+L power:GND #PWR?
+U 1 1 626CD7FE
+P 5050 6100
+F 0 "#PWR?" H 5050 5850 50  0001 C CNN
+F 1 "GND" H 5055 5927 50  0000 C CNN
+F 2 "" H 5050 6100 50  0001 C CNN
+F 3 "" H 5050 6100 50  0001 C CNN
+	1    5050 6100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 626CD9FD
+P 3400 5000
+F 0 "#PWR?" H 3400 4750 50  0001 C CNN
+F 1 "GND" H 3405 4827 50  0000 C CNN
+F 2 "" H 3400 5000 50  0001 C CNN
+F 3 "" H 3400 5000 50  0001 C CNN
+	1    3400 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3400 5000 3400 4950
+Wire Wire Line
+	3400 4950 3500 4950
+Wire Wire Line
+	5050 6100 5050 6050
+Wire Wire Line
+	5050 6050 5000 6050
+$Comp
+L power:GND #PWR?
+U 1 1 626CF2C3
+P 2100 2750
+F 0 "#PWR?" H 2100 2500 50  0001 C CNN
+F 1 "GND" H 2105 2577 50  0000 C CNN
+F 2 "" H 2100 2750 50  0001 C CNN
+F 3 "" H 2100 2750 50  0001 C CNN
+	1    2100 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2100 2750 2100 2700
+Wire Wire Line
+	2100 2700 2000 2700
+Wire Wire Line
+	2300 2350 2400 2350
+Wire Wire Line
+	2400 2350 2400 2700
+Wire Wire Line
+	2400 2700 2100 2700
+Connection ~ 2100 2700
+$Comp
+L power:GND #PWR?
+U 1 1 626D00C2
+P 4050 2700
+F 0 "#PWR?" H 4050 2450 50  0001 C CNN
+F 1 "GND" H 4055 2527 50  0000 C CNN
+F 2 "" H 4050 2700 50  0001 C CNN
+F 3 "" H 4050 2700 50  0001 C CNN
+	1    4050 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4050 2700 4050 2650
+Wire Wire Line
+	3950 2650 4050 2650
+Connection ~ 4050 2650
 $EndSCHEMATC
