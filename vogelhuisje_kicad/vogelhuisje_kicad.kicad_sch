@@ -931,6 +931,9 @@
     (path "/00000000-0000-0000-0000-00006263b8ad/00000000-0000-0000-0000-00006263ef5e"
       (reference "#PWR0103") (unit 1) (value "GND") (footprint "")
     )
+    (path "/00000000-0000-0000-0000-00006263b8ad/53276018-b274-4986-9b03-014d0b3b6bd3"
+      (reference "#PWR0104") (unit 1) (value "GND") (footprint "")
+    )
     (path "/00000000-0000-0000-0000-00006263b902/f5f3dd4c-f2f5-4bc2-81b2-4784e42e584d"
       (reference "#PWR0108") (unit 1) (value "GND") (footprint "")
     )
@@ -961,6 +964,9 @@
     (path "/00000000-0000-0000-0000-00006263b902/00000000-0000-0000-0000-0000626cd7fe"
       (reference "#PWR0119") (unit 1) (value "GND") (footprint "")
     )
+    (path "/00000000-0000-0000-0000-00006263b902/8e3170ae-584d-4c2a-93dd-c284306532b6"
+      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
+    )
     (path "/00000000-0000-0000-0000-00006263b902/00000000-0000-0000-0000-00006264ab53"
       (reference "A1") (unit 1) (value "Arduino_Nano_v3.x") (footprint "Module:Arduino_Nano")
     )
@@ -990,6 +996,9 @@
     )
     (path "/00000000-0000-0000-0000-00006263b8ad/00000000-0000-0000-0000-00006264edff"
       (reference "Q1") (unit 1) (value "Q_PMOS_GSD") (footprint "Package_TO_SOT_SMD:SOT-23")
+    )
+    (path "/00000000-0000-0000-0000-00006263b8ad/8815a3d2-f9c2-4a0c-a732-8e149e8acd4a"
+      (reference "R1") (unit 1) (value "-") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal")
     )
     (path "/00000000-0000-0000-0000-00006263b8ad/00000000-0000-0000-0000-00006263ead6"
       (reference "R2") (unit 1) (value "100k") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal")
