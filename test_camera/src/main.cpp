@@ -1,11 +1,12 @@
+//*
 #include <Arduino.h>
 #include <WiFiClientSecure.h>
 #include <MQTT.h>
 
 // Camera related
 #include "esp_camera.h"
-#include "soc/soc.h"           // Disable brownour problems
-#include "soc/rtc_cntl_reg.h"  // Disable brownour problems
+#include "soc/soc.h"           // Disable brownout problems
+#include "soc/rtc_cntl_reg.h"  // Disable brownout problems
 #include "driver/rtc_io.h"
 
 // camera model
@@ -138,7 +139,7 @@ void take_picture()
   pic = esp_camera_fb_get();  
   if(!pic) {
       Serial.println("Camera capture failed");
-      init_camera();
+      //init_camera();
       return;
   }
   
@@ -161,3 +162,4 @@ void loop()
   take_picture();
   delay(5000);
 }
+//*/
