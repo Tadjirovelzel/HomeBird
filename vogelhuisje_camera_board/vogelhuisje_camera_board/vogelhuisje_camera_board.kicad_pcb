@@ -67,7 +67,7 @@
       (mirror false)
       (drillshape 0)
       (scaleselection 1)
-      (outputdirectory "../../../../../Documents/GitHub/HomeBirdGit/Gerbers/Cameraboard/")
+      (outputdirectory "../../Gerbers/Cameraboard/new/")
     )
   )
 

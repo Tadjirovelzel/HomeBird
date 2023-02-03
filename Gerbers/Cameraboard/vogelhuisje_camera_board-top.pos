@@ -1,0 +1,11 @@
+### Module positions - created on Fri Feb  3 15:27:14 2023 ###
+### Printed by Pcbnew version (6.0.7)
+## Unit = mm, Angle = deg.
+## Side : top
+# Ref     Val               Package                                                 PosX       PosY       Rot  Side
+D4        LED               SFH_4253                                            123.0000  -134.0000  180.0000  top
+D5        LED               SFH_4253                                            107.0000  -145.9000  180.0000  top
+D6        LED               SFH_4253                                            107.2000  -134.0000  180.0000  top
+D7        LED               SFH_4253                                            123.0000  -145.9000  180.0000  top
+J4        Camera_Connector  Hirose_FH12-24S-0.5SH_1x24-1MP_P0.50mm_Horizontal   115.0000   -72.9000    0.0000  top
+## End
