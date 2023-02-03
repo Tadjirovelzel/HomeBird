@@ -801,6 +801,12 @@
     (path "/c75750c0-c5ef-4d26-9b8b-80f441dd56ec/00000000-0000-0000-0000-0000626da198"
       (reference "R100k1") (unit 1) (value "100kOhm") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
     )
+    (path "/c75750c0-c5ef-4d26-9b8b-80f441dd56ec/4487cd54-10e2-4132-8601-5c7b471a19f0"
+      (reference "R100k2") (unit 1) (value "100kOhm") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+    )
+    (path "/c75750c0-c5ef-4d26-9b8b-80f441dd56ec/40e9df4d-2c35-4e9a-8b79-7c3d197f1321"
+      (reference "R100k3") (unit 1) (value "100kOhm") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
+    )
     (path "/c75750c0-c5ef-4d26-9b8b-80f441dd56ec/00000000-0000-0000-0000-00006271743c"
       (reference "URegulator1.2") (unit 1) (value "1.2V Regulator") (footprint "Package_TO_SOT_THT:TO-92")
     )
