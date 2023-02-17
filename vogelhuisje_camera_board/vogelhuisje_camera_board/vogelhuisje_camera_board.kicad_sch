@@ -808,10 +808,10 @@
       (reference "R100k3") (unit 1) (value "100kOhm") (footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal")
     )
     (path "/c75750c0-c5ef-4d26-9b8b-80f441dd56ec/00000000-0000-0000-0000-00006271743c"
-      (reference "URegulator1.2") (unit 1) (value "1.2V Regulator") (footprint "Package_TO_SOT_SMD:SOT-23-3")
+      (reference "URegulator1.2") (unit 1) (value "1.2V Regulator") (footprint "Package_TO_SOT_THT:TO-92")
     )
     (path "/c75750c0-c5ef-4d26-9b8b-80f441dd56ec/00000000-0000-0000-0000-0000627127f0"
-      (reference "URegulator2.8") (unit 1) (value "2.8V regulator") (footprint "Package_TO_SOT_SMD:SOT-23-3")
+      (reference "URegulator2.8") (unit 1) (value "2.8V regulator") (footprint "Package_TO_SOT_THT:TO-92")
     )
   )
 )
