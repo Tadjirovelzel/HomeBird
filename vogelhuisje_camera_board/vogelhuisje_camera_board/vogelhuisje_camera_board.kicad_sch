@@ -784,7 +784,7 @@
       (reference "J1") (unit 1) (value "Conn_01x21_Female") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x21_P2.54mm_Vertical")
     )
     (path "/c75750c0-c5ef-4d26-9b8b-80f441dd56ec/00000000-0000-0000-0000-0000626f059a"
-      (reference "J4") (unit 1) (value "Camera Connector") (footprint "components:camera_connector")
+      (reference "J4") (unit 1) (value "Camera Connector") (footprint "components:CONN_MOLEX_52437-2471")
     )
     (path "/c75750c0-c5ef-4d26-9b8b-80f441dd56ec/5475c546-1f4d-402b-ba05-5e6f6fdf238f"
       (reference "JMotion1") (unit 1) (value "Conn_01x03_Female") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical")

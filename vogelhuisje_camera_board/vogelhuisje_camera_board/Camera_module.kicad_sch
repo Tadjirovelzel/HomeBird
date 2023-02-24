@@ -1550,7 +1550,7 @@
     (property "Value" "Camera Connector" (id 1) (at 90.7288 93.599 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "components:camera_connector" (id 2) (at 91.44 96.52 0)
+    (property "Footprint" "components:CONN_MOLEX_52437-2471" (id 2) (at 91.44 96.52 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 91.44 96.52 0)
