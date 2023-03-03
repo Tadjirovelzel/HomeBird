@@ -1,7 +1,4 @@
-//*
 #include <Arduino.h>
-#include <WiFiClientSecure.h>
-#include <MQTT.h>
 
 // Camera related
 #include "esp_camera.h"
@@ -35,7 +32,7 @@
 #elif defined(CAMERA_MODEL_AI_THINKER_MODIFIED)
   #define PWDN_GPIO_NUM     32
   #define RESET_GPIO_NUM    -1
-  #define XCLK_GPIO_NUM      0
+  #define XCLK_GPIO_NUM     12
   #define SIOD_GPIO_NUM     26
   #define SIOC_GPIO_NUM     27
 
@@ -55,38 +52,7 @@
   #error "Camera model not selected"
 #endif
 
-// WiFi parameters
-const char ssid[] = "H369AEA4CE8";
-const char pass[] = "FA9694C7FEC3";
-
-// MQTT parameters
-#define MQTT_USER "nestwachtdevlennard"
-#define MQTT_PASSWORD "nVy5@2KUKJpH3"
-#define MQTT_SERIAL_PUBLISH_CH "device/5/clip"
-const char* mqtt_server = "16c8ca6fc79543699af71365bfeed7bf.s2.eu.hivemq.cloud";
-
-WiFiClientSecure net;
-MQTTClient client;
-
-void connect() 
-{
-  Serial.print("checking wifi...");
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-      Serial.print(".");
-      delay(100);
-  }
-
-  Serial.print("\nconnecting...");
-  net.setInsecure();
-  while (!client.connect("32DrhEK#7LQNk", MQTT_USER, MQTT_PASSWORD))
-  {
-      Serial.print(".");
-      delay(100);
-  }
-
-  Serial.println("\nconnected!");
-}
+#define CONFIG_ESP32_SPIRAM_SUPPORT 1 
 
 void init_camera()
 {
@@ -115,7 +81,7 @@ void init_camera()
   
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // FRAMESIZE_ + QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA
-    config.jpeg_quality = 10;
+    config.jpeg_quality = 30;
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
@@ -138,28 +104,24 @@ void take_picture()
   // Take Picture with Camera
   pic = esp_camera_fb_get();  
   if(!pic) {
-      Serial.println("Camera capture failed");
-      //init_camera();
-      return;
+    Serial.println("Camera capture failed");
+    // init_camera();
+    return;
+  } else{
+    Serial.println("Camera capture succesful");
+    Serial.println("Format: " + String(pic->format) + "; size: " + String(pic->len));
   }
   
-  delay(2000);
-  if (!client.connected()) connect();
-  client.publish(MQTT_SERIAL_PUBLISH_CH, (const char *)pic->buf, pic->len);
   esp_camera_fb_return(pic);
 }
 
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-
   Serial.begin(115200);
-
   init_camera();
 }
 
-void loop() 
-{
+void loop() {
   take_picture();
   delay(5000);
 }
-//*/
