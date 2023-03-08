@@ -1,3 +1,12 @@
+//logging
+#ifdef CORE_DEBUG_LEVEL
+#undef CORE_DEBUG_LEVEL
+#endif
+
+#define CORE_DEBUG_LEVEL 5
+#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+#include "esp32-hal-log.h"
+
 //*
 #include <Arduino.h>
 #include <WiFiClientSecure.h>
@@ -41,8 +50,8 @@
 
   #define Y9_GPIO_NUM       33
   #define Y8_GPIO_NUM       34
-  #define Y7_GPIO_NUM       13
-  #define Y6_GPIO_NUM       15
+  #define Y7_GPIO_NUM       39//13
+  #define Y6_GPIO_NUM       36//15
   #define Y5_GPIO_NUM       21
   #define Y4_GPIO_NUM       19
   #define Y3_GPIO_NUM       18
@@ -111,23 +120,28 @@ void init_camera()
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
-  config.pixel_format = PIXFORMAT_JPEG; 
+  config.pixel_format = PIXFORMAT_RGB565;
+  config.fb_location    = CAMERA_FB_IN_PSRAM; /*!< The location where the frame buffer will be allocated */
+  config.grab_mode      = CAMERA_GRAB_LATEST;  /*!< When buffers should be filled */
   
+  Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // FRAMESIZE_ + QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA
-    config.jpeg_quality = 10;
-    config.fb_count = 2;
+    // config.jpeg_quality = 10;
+    config.fb_count = 1;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;
+    // config.jpeg_quality = 12;
     config.fb_count = 1;
     }
   
   // Init Camera
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
-    Serial.printf("Camera init failed with error 0x%x", err);
+    Serial.printf("Camera init failed with error 0x%x\n", err);
     return;
+  } else {
+    Serial.printf("Camera init succes\n", err);
   }
 }
 
@@ -136,11 +150,15 @@ void take_picture()
   camera_fb_t * pic = NULL;
 
   // Take Picture with Camera
-  pic = esp_camera_fb_get();  
-  if(!pic) {
-      Serial.println("Camera capture failed");
-      //init_camera();
-      return;
+  pic = esp_camera_fb_get();
+
+  if(pic) {
+    Serial.println("Camera capture succeeded");
+    Serial.printf("Picture taken! Its size was: %zu bytes", pic->len);
+  } else {
+    Serial.println("Camera capture failed");
+    //init_camera();
+    return;
   }
   
   delay(2000);
@@ -150,9 +168,11 @@ void take_picture()
 }
 
 void setup() {
+  esp_log_level_set("*", ESP_LOG_DEBUG);
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
 
   Serial.begin(115200);
+  Serial.setDebugOutput(true);
 
   init_camera();
 }
