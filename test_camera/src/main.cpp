@@ -50,8 +50,8 @@
 
   #define Y9_GPIO_NUM       33
   #define Y8_GPIO_NUM       34
-  #define Y7_GPIO_NUM       39//13
-  #define Y6_GPIO_NUM       36//15
+  #define Y7_GPIO_NUM       13//13 or 39 for special board
+  #define Y6_GPIO_NUM       15//15 or 36 for special board
   #define Y5_GPIO_NUM       21
   #define Y4_GPIO_NUM       19
   #define Y3_GPIO_NUM       18
@@ -65,21 +65,23 @@
 #endif
 
 // WiFi parameters
-const char ssid[] = "H369AEA4CE8";
-const char pass[] = "FA9694C7FEC3";
+const char* ssid = "dinges";
+const char* pass = "dinges11";
 
 // MQTT parameters
-#define MQTT_USER "nestwachtdevlennard"
-#define MQTT_PASSWORD "nVy5@2KUKJpH3"
+#define MQTT_USER "fnrfeqot"
+#define MQTT_PASSWORD "P-1Ta8Utd1Pj"
 #define MQTT_SERIAL_PUBLISH_CH "device/5/clip"
-const char* mqtt_server = "16c8ca6fc79543699af71365bfeed7bf.s2.eu.hivemq.cloud";
+#define MQTT_CLIENT_ID "32DrhEK#7LQNk"
+const char* mqtt_server = "excellent-engraver.cloudmqtt.com";
 
 WiFiClientSecure net;
 MQTTClient client;
 
 void connect() 
 {
-  Serial.print("checking wifi...");
+  Serial.println("checking wifi...");
+  WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED) 
   {
       Serial.print(".");
@@ -88,7 +90,9 @@ void connect()
 
   Serial.print("\nconnecting...");
   net.setInsecure();
-  while (!client.connect("32DrhEK#7LQNk", MQTT_USER, MQTT_PASSWORD))
+  Serial.println("test");
+  
+  while (!client.connect(MQTT_CLIENT_ID, MQTT_USER, MQTT_PASSWORD))
   {
       Serial.print(".");
       delay(100);
@@ -119,7 +123,7 @@ void init_camera()
   config.pin_sccb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000;
+  config.xclk_freq_hz = 24000000;
   config.pixel_format = PIXFORMAT_RGB565;
   config.fb_location    = CAMERA_FB_IN_PSRAM; /*!< The location where the frame buffer will be allocated */
   config.grab_mode      = CAMERA_GRAB_LATEST;  /*!< When buffers should be filled */
@@ -154,7 +158,7 @@ void take_picture()
 
   if(pic) {
     Serial.println("Camera capture succeeded");
-    Serial.printf("Picture taken! Its size was: %zu bytes", pic->len);
+    Serial.printf("Picture taken! Its size was: %zu bytes\n", pic->len);
   } else {
     Serial.println("Camera capture failed");
     //init_camera();
