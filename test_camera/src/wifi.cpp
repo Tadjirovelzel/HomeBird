@@ -3,12 +3,6 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-// #define TINY_GSM_MODEM_SIM7600
-// #include <TinyGsmClient.h>
-
-//TinyGsm modem(SerialAT);
-//TinyGsmClient gsmclient(modem);
-
 // Camera related
 #include "esp_camera.h"
 #include "soc/soc.h"           // Disable brownout problems
@@ -62,10 +56,10 @@
 #endif
 
 // WiFi credentials
-// const char ssid[] = "H369AEA4CE8";
-// const char pass[] = "FA9694C7FEC3";
-const char ssid[] = "Moto Lennard";
-const char pass[] = "hotspotlennard";
+const char ssid[] = "H369AEA4CE8";
+const char pass[] = "FA9694C7FEC3";
+// const char ssid[] = "Moto Lennard";
+// const char pass[] = "hotspotlennard";
 
 // MQTT details
 const char* broker = "excellent-engraver.cloudmqtt.com";        // Public IP address or domain name
@@ -90,7 +84,7 @@ void connect() {
         if (i > 30) ESP.restart();
     }
 
-    Serial.print("\nconnecting,,,");
+    Serial.print("\nconnecting mqtt...");
     while (!client.connected()){
         // Create a random client ID
         String clientId = "ESP32Client-";
@@ -99,9 +93,7 @@ void connect() {
         // Attempt to connect
         if (client.connect(clientId.c_str(), mqttUsername, mqttPassword)) {
             Serial.println("\nconnected!");
-        } else{
-            Serial.print(",");
-        }
+        } else Serial.print(".");
 
         delay(1000); i++;
         if (i > 60) ESP.restart();
@@ -135,7 +127,6 @@ void init_camera()
     config.pixel_format = PIXFORMAT_RGB565;
     config.fb_location    = CAMERA_FB_IN_PSRAM;     // The location where the frame buffer will be allocated
     config.grab_mode      = CAMERA_GRAB_WHEN_EMPTY; // When buffers should be filled
-
     config.frame_size = FRAMESIZE_VGA;
     config.jpeg_quality = 20;
     config.fb_count = 1;
@@ -147,9 +138,7 @@ void init_camera()
     if (err != ESP_OK) {
         Serial.printf("Camera init failed with error 0x%x\n", err);
         return;
-    } else {
-        Serial.printf("Camera init succes\n", err);
-    }
+    } else Serial.printf("Camera init succes\n");
 }
 
 void take_picture()
@@ -174,7 +163,6 @@ void take_picture()
                 Serial.println("Failed to convert to JPEG");
             } 
             if (!client.connected()) connect();
-            
             sent = client.publish(topicImage, cnv_buf, cnv_buf_len);
         } else{
             if (!client.connected()) connect();
@@ -184,13 +172,10 @@ void take_picture()
         if (!sent){
             int err = client.state();
             Serial.printf("Upload failed with error %d \n", err);
-        } else{
-            Serial.println("Upload succesfull");
-        }
+        } else Serial.println("Upload succesfull");
     }
 
-    free(cnv_buf);
-    esp_camera_fb_return(pic);
+    free(cnv_buf); esp_camera_fb_return(pic);
 }
 
 void setup() {

@@ -85,8 +85,8 @@ uint8_t * cnv_buf = NULL;
 
   #define Y9_GPIO_NUM       33
   #define Y8_GPIO_NUM       34
-  #define Y7_GPIO_NUM       13//13 or 39 for special board
-  #define Y6_GPIO_NUM       15//15 or 36 for special board
+  #define Y7_GPIO_NUM       13
+  #define Y6_GPIO_NUM       15
   #define Y5_GPIO_NUM       21
   #define Y4_GPIO_NUM       19
   #define Y3_GPIO_NUM       18
@@ -101,7 +101,7 @@ uint8_t * cnv_buf = NULL;
 
 void modem_on()
 {
-    // The time of active low level impulse of PWRKEY pin to power on module , type 500 ms
+    // The time of active low level impulse of PWRKEY pin to power on module, typically 500 ms
     Serial.println("\nStarting Up Modem...");
     digitalWrite(LED_PIN, LOW);   
     digitalWrite(POWER_PIN, HIGH);
@@ -110,15 +110,6 @@ void modem_on()
     digitalWrite(PWR_PIN, LOW);
     delay(5000);
     
-    
-    // Set-up modem  power pin
-    // Serial.println("\nStarting Up Modem...");
-    // pinMode(PWR_PIN, OUTPUT);
-    // digitalWrite(PWR_PIN, HIGH);
-    // delay(300);
-    // digitalWrite(PWR_PIN, LOW);
-    // delay(10000);
-
     int i = 10;
     Serial.println("\nTesting Modem Response...\n");
     Serial.println("****");
@@ -130,7 +121,7 @@ void modem_on()
             Serial.println(r);
             if ( r.indexOf("OK") >= 0 ) {
                 reply = true;
-                break;;
+                break;
             }
         }
         delay(500);
@@ -173,76 +164,6 @@ void initModem(){
     DBG("Modem Info:", modemInfo);    
 }
 
-// void connectGPRS(){
-//     // Check if the modem is active or not.
-//     if (modem.testAT()) {
-//       Serial.println("Modem is active.");
-//     } else {
-//       Serial.println("Modem is not active.");
-//       initModem();
-//     }   
-
-//     // Unlock your SIM card with a PIN if needed
-//     if (GSM_PIN && modem.getSimStatus() != 3) {
-//         modem.simUnlock(GSM_PIN);
-//     }
-
-//     // Registrate network
-//     SerialMon.print("Waiting for network...");
-//     if (!modem.waitForNetwork()) {
-//         SerialMon.println("fail");
-//         delay(10000);
-//         return;
-//     }
-//     SerialMon.println("Success!");
-
-//     if (modem.isNetworkConnected()) {
-//         SerialMon.println("Network connected");
-//     }
-
-//     // GPRS connection parameters are usually set after network registration
-//     SerialMon.print(F("Connecting to "));
-//     SerialMon.print(apn);
-//     if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-//         SerialMon.println(" fail");
-//         delay(10000);
-//         return;
-//     }
-//     SerialMon.println(" success");
-
-//     // Check connection
-//     if (modem.isGprsConnected()) {
-//         SerialMon.println("GPRS connected");
-//     }
-// }
-
-// boolean mqttConnect()
-// {
-//     SerialMon.print("Connecting to ");
-//     SerialMon.print(broker);
-
-//     int i = 0;
-//     while (!mqtt.connected()){
-//         // Create a random client ID
-//         String clientId = "ESP32Client-";
-//         clientId += String(random(0xffff), HEX);
-
-//         // Attempt to connect
-//         if (mqtt.connect(clientId.c_str(), mqttUsername, mqttPassword)) {
-//             Serial.println("\nconnected!");
-//         } else{
-//             Serial.print(".");
-//         }
-
-//         delay(1000); i++;
-//         if (i > 30) ESP.restart();
-//     }
-
-//     mqtt.publish(topicMeasure, "{\"temperature\":16,\"humidity\":53}");
-//     Serial2.print("Data sent"); SerialMon.println("Data sent");
-
-//     return mqtt.connected();
-// }
 
 void connectGPRS(){
     // Check if the modem is active or not.
@@ -256,10 +177,16 @@ void connectGPRS(){
         }
     }
 
-    // Unlock your SIM card with a PIN if needed
-    if (GSM_PIN && modem.getSimStatus() != 3) {
-        modem.simUnlock(GSM_PIN);
-    }
+    //     // Check if the modem is active or not.
+    //     if (modem.testAT()) {
+    //       Serial.println("Modem is active.");
+    //     } else {
+    //       Serial.println("Modem is not active.");
+    //       initModem();
+    //     }   
+
+    // Unlock SIM card with a PIN if needed
+    if (GSM_PIN && modem.getSimStatus() != 3) modem.simUnlock(GSM_PIN);
 
     // Registrate network
     Serial.print("Waiting for network...");
@@ -270,9 +197,7 @@ void connectGPRS(){
     }
     Serial.println("Success!");
 
-    if (modem.isNetworkConnected()) {
-        Serial.println("Network connected");
-    }
+    if (modem.isNetworkConnected()) Serial.println("Network connected");
 
     // GPRS connection parameters are usually set after network registration
     Serial.print(F("Connecting to "));
@@ -285,15 +210,12 @@ void connectGPRS(){
     Serial.println(" success");
 
     // Check connection
-    if (modem.isGprsConnected()) {
-        Serial.println("GPRS connected");
-    }
+    if (modem.isGprsConnected()) Serial.println("GPRS connected");
 }
 
-void mqttConnect()
+void connectMQTT()
 {
-    Serial.print("Connecting to ");
-    Serial.print(broker);
+    Serial.print("Connecting to "); Serial.print(broker);
 
     int i = 0;
     while (!mqtt.connected()){
@@ -304,15 +226,13 @@ void mqttConnect()
         // Attempt to connect
         if (mqtt.connect(clientId.c_str(), mqttUsername, mqttPassword)) {
             Serial.println("\nconnected!");
-        } else{
-            Serial.print(".");
-        }
+        } else Serial.print(".");
 
         delay(1000); i++;
         if (i > 30) ESP.restart();
     }
 
-    if(mqtt.connected()) {Serial.println("MQTT Connected!");}
+    if(mqtt.connected()) Serial.println("MQTT Connected!");
 }
 
 void connect()
@@ -320,18 +240,18 @@ void connect()
     // Registrate network
     if (!modem.isGprsConnected()) {
         Serial.println("GPRS disconnected!");
-        modem_on();
-        connectGPRS();
+        initModem(); connectGPRS();
     }
 
     // Connect MQTT
     if (modem.isGprsConnected() && !mqtt.connected()) {
         Serial.println("=== MQTT NOT CONNECTED ===");
+        
         // Reconnect every 10 seconds
         uint32_t t = millis();
         if (t - lastReconnectAttempt > 100L) {
             lastReconnectAttempt = t;
-            mqttConnect();
+            connectMQTT();
         }
         delay(100);
         return;
@@ -362,6 +282,7 @@ void init_camera()
     config.pin_pwdn = PWDN_GPIO_NUM;
     config.pin_reset = RESET_GPIO_NUM;
     config.xclk_freq_hz = 12000000;
+    //config.pixel_format = PIXFORMAT_JPEG;
     config.pixel_format = PIXFORMAT_RGB565;
     config.fb_location    = CAMERA_FB_IN_PSRAM; // The location where the frame buffer will be allocated
     config.grab_mode      = CAMERA_GRAB_LATEST; // When buffers should be filled
@@ -383,7 +304,6 @@ void init_camera()
     }
 }
 
-
 void take_picture()
 {
     camera_fb_t * pic = NULL;
@@ -402,34 +322,9 @@ void take_picture()
         if(pic->format != 4){
             if(frame2jpg(pic, 80, &cnv_buf, &cnv_buf_len)){
                 Serial.printf("Converted to JPEG, size = %d \n", cnv_buf_len);
-            } else{
-                Serial.println("Failed to convert to JPEG");
-            }
+            } else Serial.println("Failed to convert to JPEG");
 
             connect();
-            
-            // // Registrate network
-            // if (!modem.isGprsConnected()) {
-            //     SerialMon.println("GPRS disconnected!");
-            //     modem.restart();
-            //     //connectGPRS();
-            // }
-
-            // // Connect MQTT
-            // if (!mqtt.connected()) {
-            //     SerialMon.println("=== MQTT NOT CONNECTED ===");
-            //     // Reconnect every 10 seconds
-            //     uint32_t t = millis();
-            //     if (t - lastReconnectAttempt > 100L) {
-            //         lastReconnectAttempt = t;
-            //         if (mqttConnect()) {
-            //             lastReconnectAttempt = 0;
-            //         }
-            //     }
-            //     delay(100);
-            //     return;
-            // }
-           
             if(mqtt.publish(topicImage, cnv_buf, cnv_buf_len)){
                 Serial.println("Upload succesfull");
             } else{
@@ -437,47 +332,15 @@ void take_picture()
                 Serial.printf("Upload failed with error %d \n", err);
             }
         } else{
-            // if (!modem.isGprsConnected()) {
-            // SerialMon.println("GPRS disconnected!");
-            // SerialMon.print(F("Connecting to "));
-            // SerialMon.print(apn);
-            // if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-            //         SerialMon.println(" fail");
-            //         delay(10000);
-            //         return;
-            //     } else{
-            //         SerialMon.println("GPRS reconnected");
-            //     }
-            // }
-
-            // if (!mqtt.connected()) {
-            //     SerialMon.println("=== MQTT NOT CONNECTED ===");
-            //     // Reconnect every 10 seconds
-            //     uint32_t t = millis();
-            //     if (t - lastReconnectAttempt > 100L) {
-            //         lastReconnectAttempt = t;
-            //         if (mqttConnect()) {
-            //             lastReconnectAttempt = 0;
-            //         }
-            //     }
-            //     delay(100);
-            //     return;
-            // }
-
             connect();
-           
             if(mqtt.publish(topicImage, pic->buf, pic->len)){
                 Serial.println("Upload succesfull");
-            } else{
-                int err = mqtt.state();
-                Serial.printf("Upload failed with error %d \n", err);
-            }            
+            } else Serial.printf("Upload failed with error %d \n", mqtt.state());            
         }
     }
 
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
-    free(cnv_buf);
-    esp_camera_fb_return(pic);
+    free(cnv_buf); esp_camera_fb_return(pic);
 }
 
 
@@ -494,21 +357,16 @@ void setup()
     pinMode(POWER_PIN, OUTPUT);     // POWER_PIN : This pin controls the power supply of the SIM7600
     pinMode(PWR_PIN, OUTPUT);       // PWR_PIN ： This Pin is the PWR-KEY of the SIM7600
 
-    // Initialize camera
+    // Initialize camera (enable to initialize camera before sim)
     // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
     // init_camera();
     delay(1000);
 
     SerialAT.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
 
-    // Start modem and connect GPRS
-    initModem();
-    connectGPRS();
-    // connect();
-
-    // Connect to mqtt and test connection
+    // Start modem and connect GPRS and MQTT
     mqtt.setServer(broker, 1883);
-    mqttConnect();
+    connect();
 
     // MQTT buffer size
     Serial.printf("Buffer size: %d \n", mqtt.getBufferSize());
@@ -518,7 +376,7 @@ void setup()
 
     delay(10000);
 
-    // Initialize camera
+    // Initialize camera (disable to initialize camera after sim)
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
     init_camera();
 }
@@ -538,79 +396,5 @@ void loop()
     mqtt.loop();
     delay(1000);
 }
-
-// if (!modem.isGprsConnected()) {
-//     SerialMon.println("GPRS disconnected!");
-//     SerialMon.print(F("Connecting to "));
-//     SerialMon.print(apn);
-//     if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-//         SerialMon.println(" fail");
-//         delay(10000);
-//         return;
-//     }
-//     if (modem.isGprsConnected()) {
-//         SerialMon.println("GPRS reconnected");
-//     }
-// }
-
-// if (!mqtt.connected()) {
-//     SerialMon.println("=== MQTT NOT CONNECTED ===");
-//     // Reconnect every 10 seconds
-//     uint32_t t = millis();
-//     if (t - lastReconnectAttempt > 100L) {
-//     lastReconnectAttempt = t;
-//     if (mqttConnect()) {
-//         lastReconnectAttempt = 0;
-//     }
-//     }
-//     delay(100);
-//     return;
-// }
-
-// void take_picture()
-// {
-//     camera_fb_t * pic = NULL;
-
-//     // Take Picture with Camera
-//     pic = esp_camera_fb_get();
-
-//     if(pic) {
-//         Serial.println("Camera capture succeeded");
-//         Serial.printf("Picture taken! Its size was: %zu bytes\n", pic->len);
-//     } else {
-//         Serial.println("Camera capture failed");
-//         return;
-//     }
-
-//     if (!modem.isGprsConnected()) {
-//       SerialMon.println("GPRS disconnected!");
-//       SerialMon.print(F("Connecting to "));
-//       SerialMon.print(apn);
-//       if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
-//             SerialMon.println(" fail");
-//             delay(10000);
-//             return;
-//         } else {
-//             SerialMon.println("GPRS reconnected");
-//         }
-//     }
-
-//     if (!mqtt.connected()) {
-//         SerialMon.println("=== MQTT NOT CONNECTED ===");
-//         // Reconnect every 10 seconds
-//         uint32_t t = millis();
-//         if (t - lastReconnectAttempt > 100L) {
-//             lastReconnectAttempt = t;
-//             if (mqttConnect()) {
-//                 lastReconnectAttempt = 0;
-//             }
-//         }
-//         delay(100);
-//         return;
-//     }
-  
-//     mqtt.publish(topicImage, (const char *)pic->buf, pic->len);
-//     esp_camera_fb_return(pic);
-// }
 
 //*/
