@@ -1,4 +1,4 @@
-/*
+//*
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
@@ -55,11 +55,41 @@
   #error "Camera model not selected"
 #endif
 
+static camera_config_t camera_config = {
+    .pin_pwdn = PWDN_GPIO_NUM,
+    .pin_reset = RESET_GPIO_NUM,
+    .pin_xclk = XCLK_GPIO_NUM,
+    .pin_sccb_sda = SIOD_GPIO_NUM,
+    .pin_sccb_scl = SIOC_GPIO_NUM,
+    .pin_d7 = Y9_GPIO_NUM,
+    .pin_d6 = Y8_GPIO_NUM,
+    .pin_d5 = Y7_GPIO_NUM,
+    .pin_d4 = Y6_GPIO_NUM,
+    .pin_d3 = Y5_GPIO_NUM,
+    .pin_d2 = Y4_GPIO_NUM,
+    .pin_d1 = Y3_GPIO_NUM,
+    .pin_d0 = Y2_GPIO_NUM,
+    .pin_vsync = VSYNC_GPIO_NUM,
+    .pin_href = HREF_GPIO_NUM,
+    .pin_pclk = PCLK_GPIO_NUM,
+
+    .xclk_freq_hz = 12000000,
+    .ledc_timer = LEDC_TIMER_0,
+    .ledc_channel = LEDC_CHANNEL_0,
+    //.pixel_format = PIXFORMAT_JPEG,
+    .pixel_format = PIXFORMAT_RGB565,
+    .frame_size = FRAMESIZE_VGA,
+    .jpeg_quality = 20,
+    .fb_count = 1,
+    .grab_mode = CAMERA_GRAB_LATEST // When buffers should be filled CAMERA_GRAB_WHEN_EMPTY
+    //.fb_location    = CAMERA_FB_IN_PSRAM, // The location where the frame buffer will be allocated
+};
+
 // WiFi credentials
-const char ssid[] = "H369AEA4CE8";
-const char pass[] = "FA9694C7FEC3";
-// const char ssid[] = "Moto Lennard";
-// const char pass[] = "hotspotlennard";
+// const char ssid[] = "H369AEA4CE8";
+// const char pass[] = "FA9694C7FEC3";
+const char ssid[] = "Moto Lennard";
+const char pass[] = "hotspotlennard";
 
 // MQTT details
 const char* broker = "excellent-engraver.cloudmqtt.com";        // Public IP address or domain name
@@ -102,43 +132,23 @@ void connect() {
 
 void init_camera()
 {
-    // Camera pins
-    camera_config_t config;
-    config.ledc_channel = LEDC_CHANNEL_0;
-    config.ledc_timer = LEDC_TIMER_0;
-    config.pin_d0 = Y2_GPIO_NUM;
-    config.pin_d1 = Y3_GPIO_NUM;
-    config.pin_d2 = Y4_GPIO_NUM;
-    config.pin_d3 = Y5_GPIO_NUM;
-    config.pin_d4 = Y6_GPIO_NUM;
-    config.pin_d5 = Y7_GPIO_NUM;
-    config.pin_d6 = Y8_GPIO_NUM;
-    config.pin_d7 = Y9_GPIO_NUM;
-    config.pin_xclk = XCLK_GPIO_NUM;
-    config.pin_pclk = PCLK_GPIO_NUM;
-    config.pin_vsync = VSYNC_GPIO_NUM;
-    config.pin_href = HREF_GPIO_NUM;
-    config.pin_sccb_sda = SIOD_GPIO_NUM;
-    config.pin_sccb_scl = SIOC_GPIO_NUM;
-    config.pin_pwdn = PWDN_GPIO_NUM;
-    config.pin_reset = RESET_GPIO_NUM;
-    config.xclk_freq_hz = 12000000;
-    //config.pixel_format = PIXFORMAT_JPEG;
-    config.pixel_format = PIXFORMAT_RGB565;
-    config.fb_location    = CAMERA_FB_IN_PSRAM;     // The location where the frame buffer will be allocated
-    config.grab_mode      = CAMERA_GRAB_WHEN_EMPTY; // When buffers should be filled
-    config.frame_size = FRAMESIZE_VGA;
-    config.jpeg_quality = 20;
-    config.fb_count = 1;
-
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
     
+    // Power up the camera if PWDN pin is defined
+    if(PWDN_GPIO_NUM != -1){
+        pinMode(PWDN_GPIO_NUM, OUTPUT);
+        digitalWrite(PWDN_GPIO_NUM, LOW);
+    }
+    
     // Init Camera
-    esp_err_t err = esp_camera_init(&config);
+    esp_err_t err = esp_camera_init(&camera_config);
     if (err != ESP_OK) {
         Serial.printf("Camera init failed with error 0x%x\n", err);
         return;
-    } else Serial.printf("Camera init succes\n");
+    } else {
+        Serial.printf("Camera init succes\n", err);
+        Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
+    }
 }
 
 void take_picture()
@@ -189,7 +199,7 @@ void setup() {
     // MQTT buffer size
     Serial.printf("Buffer size: %d \n", client.getBufferSize());
     if(client.setBufferSize(65535)) Serial.printf("New buffer size set successfully: %d \n", client.getBufferSize());
-    if(client.publish(topicMeasure, "{\"temperature\":16,\"humidity\":53}")) Serial.println("Test data sent succesfully");
+    if(client.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
 
     // Initialize camera
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector

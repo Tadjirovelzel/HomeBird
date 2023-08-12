@@ -53,7 +53,9 @@ uint8_t * cnv_buf = NULL;
 #include "soc/rtc_cntl_reg.h"  // Disable brownout problems
 #include "driver/rtc_io.h"
 
-// camera model
+int cam_pins[] = {35, 34, 39, 36, 21, 19, 18, 5, 22, 23, 26, 27};
+
+// Camera model
 #define CAMERA_MODEL_AI_THINKER_MODIFIED
 
 // Pin definition for camera models
@@ -99,8 +101,44 @@ uint8_t * cnv_buf = NULL;
   #error "Camera model not selected"
 #endif
 
+static camera_config_t camera_config = {
+    .pin_pwdn = PWDN_GPIO_NUM,
+    .pin_reset = RESET_GPIO_NUM,
+    .pin_xclk = XCLK_GPIO_NUM,
+    .pin_sccb_sda = SIOD_GPIO_NUM,
+    .pin_sccb_scl = SIOC_GPIO_NUM,
+    .pin_d7 = Y9_GPIO_NUM,
+    .pin_d6 = Y8_GPIO_NUM,
+    .pin_d5 = Y7_GPIO_NUM,
+    .pin_d4 = Y6_GPIO_NUM,
+    .pin_d3 = Y5_GPIO_NUM,
+    .pin_d2 = Y4_GPIO_NUM,
+    .pin_d1 = Y3_GPIO_NUM,
+    .pin_d0 = Y2_GPIO_NUM,
+    .pin_vsync = VSYNC_GPIO_NUM,
+    .pin_href = HREF_GPIO_NUM,
+    .pin_pclk = PCLK_GPIO_NUM,
+
+    .xclk_freq_hz = 12000000,
+    .ledc_timer = LEDC_TIMER_0,
+    .ledc_channel = LEDC_CHANNEL_0,
+    //.pixel_format = PIXFORMAT_JPEG,
+    .pixel_format = PIXFORMAT_RGB565,
+    .frame_size = FRAMESIZE_VGA,
+    .jpeg_quality = 20,
+    .fb_count = 1,
+    .grab_mode = CAMERA_GRAB_LATEST // When buffers should be filled CAMERA_GRAB_WHEN_EMPTY
+    //.fb_location    = CAMERA_FB_IN_PSRAM, // The location where the frame buffer will be allocated
+};
+
 void modem_on()
 {
+    // Disable camera
+    // for(int i=0; i < 12; i++){
+    //     digitalWrite(i, LOW);
+    //     digitalWrite(32, HIGH);
+    // }
+    
     // The time of active low level impulse of PWRKEY pin to power on module, typically 500 ms
     Serial.println("\nStarting Up Modem...");
     digitalWrite(LED_PIN, LOW);   
@@ -110,10 +148,9 @@ void modem_on()
     digitalWrite(PWR_PIN, LOW);
     delay(5000);
     
-    int i = 10;
     Serial.println("\nTesting Modem Response...\n");
     Serial.println("****");
-    while (i) {
+    for(int i=0; i < 10; i++){
         SerialAT.println("AT");
         delay(500);
         if (SerialAT.available()) {
@@ -125,7 +162,6 @@ void modem_on()
             }
         }
         delay(500);
-        i--;
     }
     Serial.println("****\n");
 }
@@ -217,8 +253,7 @@ void connectMQTT()
 {
     Serial.print("Connecting to "); Serial.print(broker);
 
-    int i = 0;
-    while (!mqtt.connected()){
+    for (int i = 0; i < 30; i++){
         // Create a random client ID
         String clientId = "ESP32Client-";
         clientId += String(random(0xffff), HEX);
@@ -226,13 +261,14 @@ void connectMQTT()
         // Attempt to connect
         if (mqtt.connect(clientId.c_str(), mqttUsername, mqttPassword)) {
             Serial.println("\nconnected!");
+            break;
         } else Serial.print(".");
-
-        delay(1000); i++;
-        if (i > 30) ESP.restart();
+        delay(1000);
     }
 
-    if(mqtt.connected()) Serial.println("MQTT Connected!");
+    if(mqtt.connected()){
+        Serial.println("MQTT Connected!");
+    } else ESP.restart();
 }
 
 void connect()
@@ -258,49 +294,24 @@ void connect()
     }
 }
 
-
 void init_camera()
 {
-    // Camera pins
-    camera_config_t config;
-    config.ledc_channel = LEDC_CHANNEL_0;
-    config.ledc_timer = LEDC_TIMER_0;
-    config.pin_d0 = Y2_GPIO_NUM;
-    config.pin_d1 = Y3_GPIO_NUM;
-    config.pin_d2 = Y4_GPIO_NUM;
-    config.pin_d3 = Y5_GPIO_NUM;
-    config.pin_d4 = Y6_GPIO_NUM;
-    config.pin_d5 = Y7_GPIO_NUM;
-    config.pin_d6 = Y8_GPIO_NUM;
-    config.pin_d7 = Y9_GPIO_NUM;
-    config.pin_xclk = XCLK_GPIO_NUM;
-    config.pin_pclk = PCLK_GPIO_NUM;
-    config.pin_vsync = VSYNC_GPIO_NUM;
-    config.pin_href = HREF_GPIO_NUM;
-    config.pin_sccb_sda = SIOD_GPIO_NUM;
-    config.pin_sccb_scl = SIOC_GPIO_NUM;
-    config.pin_pwdn = PWDN_GPIO_NUM;
-    config.pin_reset = RESET_GPIO_NUM;
-    config.xclk_freq_hz = 12000000;
-    //config.pixel_format = PIXFORMAT_JPEG;
-    config.pixel_format = PIXFORMAT_RGB565;
-    config.fb_location    = CAMERA_FB_IN_PSRAM; // The location where the frame buffer will be allocated
-    config.grab_mode      = CAMERA_GRAB_LATEST; // When buffers should be filled
-    config.frame_size = FRAMESIZE_VGA;
-    config.jpeg_quality = 20;
-    config.fb_count = 1;
-
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
     
+    // Power up the camera if PWDN pin is defined
+    if(PWDN_GPIO_NUM != -1){
+        pinMode(PWDN_GPIO_NUM, OUTPUT);
+        digitalWrite(PWDN_GPIO_NUM, LOW);
+    }
+    
     // Init Camera
-    esp_err_t err = esp_camera_init(&config);
+    esp_err_t err = esp_camera_init(&camera_config);
     if (err != ESP_OK) {
         Serial.printf("Camera init failed with error 0x%x\n", err);
         return;
     } else {
         Serial.printf("Camera init succes\n", err);
         Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
-
     }
 }
 
@@ -343,7 +354,6 @@ void take_picture()
     free(cnv_buf); esp_camera_fb_return(pic);
 }
 
-
 void setup()
 {
     // Set console baud rate
@@ -379,6 +389,7 @@ void setup()
     // Initialize camera (disable to initialize camera after sim)
     WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
     init_camera();
+
 }
 
 void loop()
@@ -392,8 +403,9 @@ void loop()
 
     //mqtt.publish(topicMeasure, "{\"temperature\":16,\"humidity\":53}");
     //Serial2.print("Data sent"); SerialMon.println("Data sent");
-    take_picture();
+    //take_picture();
     mqtt.loop();
+    if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
     delay(1000);
 }
 
