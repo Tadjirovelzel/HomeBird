@@ -53,7 +53,6 @@ uint8_t * cnv_buf = NULL;
 #include "soc/rtc_cntl_reg.h"  // Disable brownout problems
 #include "driver/rtc_io.h"
 
-int cam_pins[] = {35, 34, 39, 36, 21, 19, 18, 5, 22, 23, 26, 27};
 
 // Camera model
 #define CAMERA_MODEL_AI_THINKER_MODIFIED
@@ -82,20 +81,20 @@ int cam_pins[] = {35, 34, 39, 36, 21, 19, 18, 5, 22, 23, 26, 27};
   #define PWDN_GPIO_NUM     32
   #define RESET_GPIO_NUM    -1
   #define XCLK_GPIO_NUM      0
-  #define SIOD_GPIO_NUM     26
-  #define SIOC_GPIO_NUM     27
+  #define SIOD_GPIO_NUM     21
+  #define SIOC_GPIO_NUM     22
 
   #define Y9_GPIO_NUM       33
   #define Y8_GPIO_NUM       34
   #define Y7_GPIO_NUM       13
   #define Y6_GPIO_NUM       15
-  #define Y5_GPIO_NUM       21
+  #define Y5_GPIO_NUM       5
   #define Y4_GPIO_NUM       19
-  #define Y3_GPIO_NUM       18
-  #define Y2_GPIO_NUM        5
-  #define VSYNC_GPIO_NUM    25
+  #define Y3_GPIO_NUM       39
+  #define Y2_GPIO_NUM       36 
+  #define VSYNC_GPIO_NUM    18
   #define HREF_GPIO_NUM     23
-  #define PCLK_GPIO_NUM     22
+  #define PCLK_GPIO_NUM     12
 
 #else
   #error "Camera model not selected"
@@ -122,8 +121,8 @@ static camera_config_t camera_config = {
     .xclk_freq_hz = 12000000,
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
-    //.pixel_format = PIXFORMAT_JPEG,
-    .pixel_format = PIXFORMAT_RGB565,
+    .pixel_format = PIXFORMAT_JPEG,
+    //.pixel_format = PIXFORMAT_RGB565,
     .frame_size = FRAMESIZE_VGA,
     .jpeg_quality = 20,
     .fb_count = 1,
@@ -403,7 +402,7 @@ void loop()
 
     //mqtt.publish(topicMeasure, "{\"temperature\":16,\"humidity\":53}");
     //Serial2.print("Data sent"); SerialMon.println("Data sent");
-    //take_picture();
+    take_picture();
     mqtt.loop();
     if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
     delay(1000);

@@ -1,4 +1,4 @@
-//*
+/*
 #include <Arduino.h>
 
 // SIM model
@@ -53,8 +53,6 @@ uint8_t * cnv_buf = NULL;
 #include "soc/rtc_cntl_reg.h"  // Disable brownout problems
 #include "driver/rtc_io.h"
 
-int cam_pins[] = {35, 34, 39, 36, 21, 19, 18, 5, 22, 23, 26, 27};
-
 
 // Tasks
 TaskHandle_t camera;
@@ -94,20 +92,20 @@ bool connection_on = true;
   #define PWDN_GPIO_NUM     32
   #define RESET_GPIO_NUM    -1
   #define XCLK_GPIO_NUM      0
-  #define SIOD_GPIO_NUM     26
-  #define SIOC_GPIO_NUM     27
+  #define SIOD_GPIO_NUM     21
+  #define SIOC_GPIO_NUM     22
 
   #define Y9_GPIO_NUM       33
   #define Y8_GPIO_NUM       34
   #define Y7_GPIO_NUM       13
   #define Y6_GPIO_NUM       15
-  #define Y5_GPIO_NUM       21
+  #define Y5_GPIO_NUM       5
   #define Y4_GPIO_NUM       19
-  #define Y3_GPIO_NUM       18
-  #define Y2_GPIO_NUM        5
-  #define VSYNC_GPIO_NUM    25
+  #define Y3_GPIO_NUM       39
+  #define Y2_GPIO_NUM       36 
+  #define VSYNC_GPIO_NUM    18
   #define HREF_GPIO_NUM     23
-  #define PCLK_GPIO_NUM     22
+  #define PCLK_GPIO_NUM     12
 
 #else
   #error "Camera model not selected"
@@ -447,7 +445,7 @@ void connectTask(){
         "connection_task",  // Name of the task
         10000,               // Stack size in words 
         NULL,               // Task input parameter 
-        1,                  // Priority of the task 
+        4,                  // Priority of the task 
         &connection,        // Task handle. 
         0                   // Core where the task should run
     );
@@ -459,7 +457,7 @@ void cameraTask(){
         "connection_task",  // Name of the task
         10000,              // Stack size in words 
         NULL,               // Task input parameter 
-        0,                  // Priority of the task 
+        2,                  // Priority of the task 
         &camera,            // Task handle. 
         1                   // Core where the task should run
     );
@@ -471,7 +469,7 @@ void initCameraTask(){
         "connection_task",  // Name of the task
         10000,              // Stack size in words 
         NULL,               // Task input parameter 
-        2,                  // Priority of the task 
+        3,                  // Priority of the task 
         &camera_init,       // Task handle. 
         1                   // Core where the task should run
     );
@@ -483,7 +481,7 @@ void setupTask(){
         "connection_task",  // Name of the task
         10000,              // Stack size in words 
         NULL,               // Task input parameter 
-        3,                  // Priority of the task 
+        5,                  // Priority of the task 
         &setup_init,        // Task handle. 
         1                   // Core where the task should run
     );
@@ -493,15 +491,17 @@ void setup()
 {
     setupTask();
     connectTask();
+    initCameraTask();
     Serial.println("10s Delay starting");
-    delay(20000);
+    delay(10000);
     Serial.println("10s Delay is over");
+    cameraTask();
 
     // Initialize camera (disable to initialize camera after sim)
     
     camera_on = true;
     //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-    initCameraTask();
+
     //camera_on = false;
 }
 
