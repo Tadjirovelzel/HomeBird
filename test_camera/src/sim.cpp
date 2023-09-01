@@ -123,8 +123,8 @@ static camera_config_t camera_config = {
     .ledc_channel = LEDC_CHANNEL_0,
     .pixel_format = PIXFORMAT_JPEG,
     //.pixel_format = PIXFORMAT_RGB565,
-    .frame_size = FRAMESIZE_VGA,
-    .jpeg_quality = 20,
+    .frame_size = FRAMESIZE_QCIF,
+    .jpeg_quality = 50,
     .fb_count = 1,
     .grab_mode = CAMERA_GRAB_LATEST // When buffers should be filled CAMERA_GRAB_WHEN_EMPTY
     //.fb_location    = CAMERA_FB_IN_PSRAM, // The location where the frame buffer will be allocated
@@ -327,25 +327,26 @@ void take_picture()
         Serial.println("Camera capture succesful");
         Serial.println("Format: " + String(pic->format) + "; size: " + String(pic->len));
         Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
-        bool sent;
 
         if(pic->format != 4){
             if(frame2jpg(pic, 80, &cnv_buf, &cnv_buf_len)){
                 Serial.printf("Converted to JPEG, size = %d \n", cnv_buf_len);
             } else Serial.println("Failed to convert to JPEG");
 
-            connect();
+            if(mqtt.state()) connect();
             if(mqtt.publish(topicImage, cnv_buf, cnv_buf_len)){
                 Serial.println("Upload succesfull");
-            } else{
-                int err = mqtt.state();
-                Serial.printf("Upload failed with error %d \n", err);
-            }
+            } else Serial.printf("Upload failed with error %d \n", mqtt.state());
         } else{
-            connect();
+            if(mqtt.state()) connect();
+            if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
+            Serial.write(*pic->buf);
+
+            //delay(25);
             if(mqtt.publish(topicImage, pic->buf, pic->len)){
                 Serial.println("Upload succesfull");
-            } else Serial.printf("Upload failed with error %d \n", mqtt.state());            
+            } else Serial.printf("Upload failed with error %d \n", mqtt.state());
+            delay(100);
         }
     }
 
@@ -367,15 +368,15 @@ void setup()
     pinMode(PWR_PIN, OUTPUT);       // PWR_PIN ： This Pin is the PWR-KEY of the SIM7600
 
     // Initialize camera (enable to initialize camera before sim)
-    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-    // init_camera();
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+    init_camera();
     delay(1000);
 
     SerialAT.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
 
     // Start modem and connect GPRS and MQTT
     mqtt.setServer(broker, 1883);
-    connect();
+    if(mqtt.state()) connect();
 
     // MQTT buffer size
     Serial.printf("Buffer size: %d \n", mqtt.getBufferSize());
@@ -386,8 +387,8 @@ void setup()
     delay(10000);
 
     // Initialize camera (disable to initialize camera after sim)
-    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-    init_camera();
+    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+    // init_camera();
 
 }
 
@@ -404,7 +405,7 @@ void loop()
     //Serial2.print("Data sent"); SerialMon.println("Data sent");
     take_picture();
     mqtt.loop();
-    if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
+    //if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
     delay(1000);
 }
 
