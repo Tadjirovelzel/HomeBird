@@ -1,4 +1,21 @@
-//*
+/* arduino_firmware/src/main.cpp   -   Main code designed to run on the Arduino Nano Every. 
+
+  All sensors are connected to the Nano, and sensor data is stored on a SD card. The Nano every also controls whether or not the ESP32 is powered on.
+  This code is built as a state machine, with the states defined first and the transitions between different states second. Six different states are defined:
+    -s0_sleep() is the ground state and consists of a 1024 ms sleep;
+    -s1_measure_BME() is called to read out pressure, temperature, humidity of the BME280 sensors;
+    -s2_measure_PMS() is called to read out air quality of the PMS5003 sensor;
+    -s3_send() is the state used to communicate sensor data to the ERSP32;
+    -s4_time() is used to obtain the current time from the ESP32;
+    -s5_picture() calls the ESP32 to take a picture;
+    -s6_video() calls the ESP32 to take a video;
+
+  After any state with a connection to the ESP32 (i.e. internet connection), state S4 is called to obtain the current time. After any other state a 
+  transition is made to the ground state S0 in order to put the Nano Every in sleep mode and save power.
+  
+  The use of delay is minimized throughout the code, sleep_cpu() is used instead in order to save power.
+*/
+
 #include <Arduino.h>
 #include <avr/sleep.h>
 
@@ -83,7 +100,6 @@ unsigned long currentTime()
 }
 
 // Sleep functions
-
 void RTC_init(void)
 {
   while (RTC.STATUS > 0) ;     //Wait for all register to be synchronized 
@@ -98,7 +114,6 @@ ISR(RTC_PIT_vect)
 {
   RTC.PITINTFLAGS = RTC_PI_bm;          // Clear interrupt flag by writing '1' (required) 
 }
-
 
 
 //======================================//
@@ -126,16 +141,14 @@ void s1_measure_BME()
     doc["temperature1"] = bme1.readTempC();
     doc["humidity1"] = bme1.readHumidity();
     doc["pressure1"] = bme1.readPressure();
-  } else
-    message_to_esp("BME sensor 1 not detected");
+  } else message_to_esp("BME sensor 1 not detected");
 
   if (bme2.init() == 0x60)
   {
     doc["temperature2"] = bme2.readTempC();
     doc["humidity2"] = bme2.readHumidity();
     doc["pressure2"] = bme2.readPressure();
-  } else
-    message_to_esp("BME sensor 2 not detected");
+  } else message_to_esp("BME sensor 2 not detected");
 
   doc["time"] = unix_time + (int)((currentTime()-time_last)/1000);
 
@@ -158,7 +171,7 @@ void s2_measure_PMS()
   // Power on pms sensor and refresh air
   pms.init();
   pms.wake();
-  sleep(32); // warmup period 
+  sleep(32); 
 
   // Update values and global variables
   pms.read();
@@ -173,10 +186,9 @@ void s2_measure_PMS()
 void s3_send()
 {
   digitalWrite(INTERRUPT_OUTPUT_PIN, true);
-  bool ready = sleep_while(120);
 
   // If ESP ready to receive
-  if(ready)
+  if(sleep_while(120))
   {
     if(SD.begin(6)){
     File file = SD.open("today.txt", FILE_READ);
@@ -198,10 +210,8 @@ void s3_send()
       }
       file.close();
       SD.remove("today.txt");
-    } else
-      message_to_esp("error opening file");
-  } else
-    message_to_esp("SD couldn't initialize");
+    } else message_to_esp("error opening file");
+  } else message_to_esp("SD couldn't initialize");
   SD.end();
   }
 }
@@ -209,8 +219,8 @@ void s3_send()
 void s4_time()
 {
   digitalWrite(INTERRUPT_OUTPUT_PIN, true);
-  bool ready = sleep_while(120);
-  if(ready)
+
+  if(sleep_while(120))
   {
     // Obtain time
     Serial1.write('t');
@@ -230,8 +240,8 @@ void s4_time()
 void s5_picture()
 {
   digitalWrite(INTERRUPT_OUTPUT_PIN, true);
-  bool ready = sleep_while(120);
-  if(ready)
+
+  if(sleep_while(120))
   {    
     Serial1.write('p');
     bool done = sleep_while(60);
@@ -242,8 +252,8 @@ void s5_picture()
 void s6_video()
 {
   digitalWrite(INTERRUPT_OUTPUT_PIN, true);
-  bool ready = sleep_while(120);
-  if(ready)
+
+  if(sleep_while(120))
   {    
     Serial1.write('v');
     bool done = sleep_while(60);
@@ -321,17 +331,13 @@ void write_to_file(StaticJsonDocument<256> document, String filename)
   File myfile = SD.open(filename, FILE_WRITE); // Name should respect 8.3 limit
   if(myfile)
   {
-      serializeJson(document, myfile);
-      myfile.println();
-      myfile.close();
+    serializeJson(document, myfile);
+    myfile.println();
+    myfile.close();
 
-      message_to_esp("written to file");
-      bme_last = currentTime();
-  }
-  else
-  {
-    message_to_esp("error opening file");
-  }
+    message_to_esp("written to file");
+    bme_last = currentTime();
+  } else message_to_esp("error opening file");
   SD.end();
 }
 
@@ -341,7 +347,7 @@ void sleep(int sleep_time)
   for(int i = 0; i < sleep_time; i++)  {sleep_cpu();}
 }
 
-// Sleep sleep_time seconds while ESP32 is not ready yet
+// Sleep sleep_time seconds while ESP32 is not ready
 bool sleep_while(int sleep_time)
 {
   for(int i = 0; i < sleep_time; i++){
@@ -349,6 +355,7 @@ bool sleep_while(int sleep_time)
     sleep_cpu();
     myTimer += 1024;
     timer_last = millis();
+    
     if(Serial1.availableForWrite()) Serial1.write('?');
     delay(50);
     if(Serial1.read() == 'y') return true;
@@ -436,6 +443,6 @@ void setup()
 void loop() 
 {
   machine.run();
-  delay(100);
+  delay(10);
 }
 //*/
