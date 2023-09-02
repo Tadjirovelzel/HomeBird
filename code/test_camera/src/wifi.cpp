@@ -1,3 +1,13 @@
+/*  test_camera/src/wifi.cpp  -   Code to test the functionality of the camera over WiFi
+
+    This code consists of three main functions:
+    - void connect() is used to connect the device to MQTT over WiFi;
+    - void init_camera() initializes the camera using pins and variables as defined in the camera_config structure;
+    - void take_picture() is used to take a picture and send it in JPEG format to the MQTT broker. As a result, 
+    pictures taken in other formats are converted to JPEG first.
+
+*/
+
 /*
 #include <Arduino.h>
 #include <WiFi.h>
@@ -55,6 +65,7 @@
   #error "Camera model not selected"
 #endif
 
+// Structure containing all camera pins and variables
 static camera_config_t camera_config = {
     .pin_pwdn = PWDN_GPIO_NUM,
     .pin_reset = RESET_GPIO_NUM,
@@ -77,19 +88,15 @@ static camera_config_t camera_config = {
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
     .pixel_format = PIXFORMAT_JPEG,
-    //.pixel_format = PIXFORMAT_RGB565,
     .frame_size = FRAMESIZE_VGA,
     .jpeg_quality = 20,
     .fb_count = 1,
-    .grab_mode = CAMERA_GRAB_LATEST // When buffers should be filled CAMERA_GRAB_WHEN_EMPTY
-    //.fb_location    = CAMERA_FB_IN_PSRAM, // The location where the frame buffer will be allocated
+    .grab_mode = CAMERA_GRAB_LATEST //CAMERA_GRAB_WHEN_EMPTY
 };
 
 // WiFi credentials
-// const char ssid[] = "H369AEA4CE8";
-// const char pass[] = "FA9694C7FEC3";
-const char ssid[] = "Moto Lennard";
-const char pass[] = "hotspotlennard";
+const char ssid[] = "";
+const char pass[] = "";
 
 // MQTT details
 const char* broker = "excellent-engraver.cloudmqtt.com";        // Public IP address or domain name
@@ -108,12 +115,15 @@ uint8_t * cnv_buf = NULL;
 void connect() {
     int i = 0;
     Serial.print("checking wifi...");
+    
+    // Connect to WiFi
     while (WiFi.status() != WL_CONNECTED) {
         Serial.print(".");
         delay(1000); i++;
         if (i > 30) ESP.restart();
     }
 
+    // Connect to MQTT
     Serial.print("\nconnecting mqtt...");
     while (!client.connected()){
         // Create a random client ID
@@ -155,7 +165,7 @@ void take_picture()
 {
     camera_fb_t * pic = NULL;
 
-    // Take Picture with Camera
+    // Take picture with camera
     pic = esp_camera_fb_get();  
     if(!pic) {
         Serial.println("Camera capture failed");
@@ -165,6 +175,7 @@ void take_picture()
         Serial.println("Format: " + String(pic->format) + "; size: " + String(pic->len));
         bool sent;
 
+        // Format picture as JPG and send to MQTT broker
         if(pic->format != 4){
             bool isConverted = frame2jpg(pic, 60, &cnv_buf, &cnv_buf_len);
             if(isConverted){
@@ -172,10 +183,11 @@ void take_picture()
             } else{
                 Serial.println("Failed to convert to JPEG");
             } 
-            if (!client.connected()) connect();
+            if (client.state()) connect();
             sent = client.publish(topicImage, cnv_buf, cnv_buf_len);
+            free(cnv_buf);
         } else{
-            if (!client.connected()) connect();
+            if (client.state()) connect();
             sent = client.publish(topicImage, pic->buf, pic->len);
         }
 
@@ -185,7 +197,7 @@ void take_picture()
         } else Serial.println("Upload succesfull");
     }
 
-    free(cnv_buf); esp_camera_fb_return(pic);
+    esp_camera_fb_return(pic);
 }
 
 void setup() {

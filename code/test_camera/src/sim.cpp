@@ -1,8 +1,20 @@
-//*
+/*  test-camera/src/sim.cpp  -   Code to test the functionality of the camera over 4G connection
+
+    This code consists of four main functions:
+    - void init_modem() initializes the modem by calling modem_on() repeatedly until the modem powers on, and 
+    subsequently acquires and prints modem information;
+    - void connect() is used to connect the device to MQTT over 4G connection by calling connectGPRS() and connectMQTT();
+    - void init_camera() initializes the camera using pins and variables as defined in the camera_config structure;
+    - void take_picture() is used to take a picture and send it in JPEG format to the MQTT broker. As a result, 
+    pictures taken in other formats are converted to JPEG first.
+
+*/
+
 #include <Arduino.h>
 
 // SIM model
-#define TINY_GSM_MODEM_SIM7600
+#define 
+TINY_GSM_MODEM_SIM7600
 
 // Set serial for debug console, AT commands and debug prints
 #define SerialMon Serial
@@ -34,7 +46,6 @@ const char* topicImage = "device/5/img";                 // topic images
 // Modem pins
 #define uS_TO_S_FACTOR          1000000ULL  // Conversion factor for micro seconds to seconds
 #define TIME_TO_SLEEP           60          // Time ESP32 will go to sleep (in seconds) 
-
 #define PIN_TX                  27
 #define PIN_RX                  26
 #define UART_BAUD               115200
@@ -100,6 +111,7 @@ uint8_t * cnv_buf = NULL;
   #error "Camera model not selected"
 #endif
 
+// Structure containing all camera pins and variables
 static camera_config_t camera_config = {
     .pin_pwdn = PWDN_GPIO_NUM,
     .pin_reset = RESET_GPIO_NUM,
@@ -122,22 +134,15 @@ static camera_config_t camera_config = {
     .ledc_timer = LEDC_TIMER_0,
     .ledc_channel = LEDC_CHANNEL_0,
     .pixel_format = PIXFORMAT_JPEG,
-    //.pixel_format = PIXFORMAT_RGB565,
     .frame_size = FRAMESIZE_QCIF,
     .jpeg_quality = 50,
     .fb_count = 1,
-    .grab_mode = CAMERA_GRAB_LATEST // When buffers should be filled CAMERA_GRAB_WHEN_EMPTY
-    //.fb_location    = CAMERA_FB_IN_PSRAM, // The location where the frame buffer will be allocated
+    .grab_mode = CAMERA_GRAB_LATEST //CAMERA_GRAB_WHEN_EMPTY
 };
 
+// Power on SIM7600 modem
 void modem_on()
-{
-    // Disable camera
-    // for(int i=0; i < 12; i++){
-    //     digitalWrite(i, LOW);
-    //     digitalWrite(32, HIGH);
-    // }
-    
+{   
     // The time of active low level impulse of PWRKEY pin to power on module, typically 500 ms
     Serial.println("\nStarting Up Modem...");
     digitalWrite(LED_PIN, LOW);   
@@ -147,6 +152,7 @@ void modem_on()
     digitalWrite(PWR_PIN, LOW);
     delay(5000);
     
+    // Test modem response
     Serial.println("\nTesting Modem Response...\n");
     Serial.println("****");
     for(int i=0; i < 10; i++){
@@ -165,6 +171,7 @@ void modem_on()
     Serial.println("****\n");
 }
 
+// Initialize modem
 void initModem(){
     DBG("Wait...");
     int retry = 5;
@@ -199,7 +206,7 @@ void initModem(){
     DBG("Modem Info:", modemInfo);    
 }
 
-
+// Connect device to GPRS in order to establish internet connection
 void connectGPRS(){
     // Check if the modem is active or not.
     if (modem.testAT()) {
@@ -211,14 +218,6 @@ void connectGPRS(){
             return;
         }
     }
-
-    //     // Check if the modem is active or not.
-    //     if (modem.testAT()) {
-    //       Serial.println("Modem is active.");
-    //     } else {
-    //       Serial.println("Modem is not active.");
-    //       initModem();
-    //     }   
 
     // Unlock SIM card with a PIN if needed
     if (GSM_PIN && modem.getSimStatus() != 3) modem.simUnlock(GSM_PIN);
@@ -248,6 +247,7 @@ void connectGPRS(){
     if (modem.isGprsConnected()) Serial.println("GPRS connected");
 }
 
+// Connect device to MQTT if an internet connection is already present
 void connectMQTT()
 {
     Serial.print("Connecting to "); Serial.print(broker);
@@ -270,6 +270,7 @@ void connectMQTT()
     } else ESP.restart();
 }
 
+// Connect device to MQTT over 4G connection
 void connect()
 {
     // Registrate network
@@ -293,6 +294,7 @@ void connect()
     }
 }
 
+// Initalize camera
 void init_camera()
 {
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
@@ -314,11 +316,12 @@ void init_camera()
     }
 }
 
+// Take picture
 void take_picture()
 {
     camera_fb_t * pic = NULL;
 
-    // Take Picture with Camera
+    // Take picture with camera
     pic = esp_camera_fb_get();  
     if(!pic) {
         Serial.println("Camera capture failed");
@@ -328,6 +331,7 @@ void take_picture()
         Serial.println("Format: " + String(pic->format) + "; size: " + String(pic->len));
         Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
 
+        // Format picture as JPG and send to MQTT broker
         if(pic->format != 4){
             if(frame2jpg(pic, 80, &cnv_buf, &cnv_buf_len)){
                 Serial.printf("Converted to JPEG, size = %d \n", cnv_buf_len);
@@ -337,12 +341,9 @@ void take_picture()
             if(mqtt.publish(topicImage, cnv_buf, cnv_buf_len)){
                 Serial.println("Upload succesfull");
             } else Serial.printf("Upload failed with error %d \n", mqtt.state());
+            free(cnv_buf);
         } else{
             if(mqtt.state()) connect();
-            if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
-            Serial.write(*pic->buf);
-
-            //delay(25);
             if(mqtt.publish(topicImage, pic->buf, pic->len)){
                 Serial.println("Upload succesfull");
             } else Serial.printf("Upload failed with error %d \n", mqtt.state());
@@ -350,8 +351,7 @@ void take_picture()
         }
     }
 
-    Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
-    free(cnv_buf); esp_camera_fb_return(pic);
+    esp_camera_fb_return(pic);
 }
 
 void setup()
@@ -366,10 +366,6 @@ void setup()
     pinMode(LED_PIN, OUTPUT);       // Onboard LED light, it can be used freely
     pinMode(POWER_PIN, OUTPUT);     // POWER_PIN : This pin controls the power supply of the SIM7600
     pinMode(PWR_PIN, OUTPUT);       // PWR_PIN ： This Pin is the PWR-KEY of the SIM7600
-
-    // Initialize camera (enable to initialize camera before sim)
-    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-    init_camera();
     delay(1000);
 
     SerialAT.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
@@ -384,11 +380,9 @@ void setup()
     if(buff) Serial.printf("New buffer size set successfully: %d \n", mqtt.getBufferSize());
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
 
-    delay(10000);
-
-    // Initialize camera (disable to initialize camera after sim)
-    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-    // init_camera();
+    // Initialize camera
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+    init_camera();
 
 }
 
@@ -401,12 +395,9 @@ void loop()
         SerialAT.write(Serial.read());
     }
 
-    //mqtt.publish(topicMeasure, "{\"temperature\":16,\"humidity\":53}");
-    //Serial2.print("Data sent"); SerialMon.println("Data sent");
     take_picture();
     mqtt.loop();
-    //if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
-    delay(1000);
+    delay(5000);
 }
 
 //*/

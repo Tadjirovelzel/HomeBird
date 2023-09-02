@@ -1,3 +1,10 @@
+/* test_video/src/main.cpp  -   Test code to record a .AVI clip on an sd card if present
+
+  If a camera and sd card are present, JPEG pictures are taken and stuck together on the sd card, forming a .AVI clip. For a more
+  detailed description of the functions and parameters, see test_video/lib/video/video.cpp
+
+*/
+
 #include <Arduino.h>
 #include "video.h"
 

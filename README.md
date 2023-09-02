@@ -3,16 +3,17 @@ This file serves to outline the structure and purpose of the folders contained w
 
 The essential project structure is displayed below:
 
-    -Kicad
-        -main_board
-        -camera_board
-        -gerbers
     -Code
         -arduino_firmware
         -esp_firmware
         -test_camera
         -test_video
+        -legacy_code
     -Enclosure
+    -Kicad
+        -main_board
+        -camera_board
+        -gerbers
 
     The project also contains the complete material bill and the login information for the Node Developer platform.
     Some irrelevant and older development code is stores in the legacy_code folder. 

@@ -1,4 +1,28 @@
-//*
+/*  esp_firmware/src/main.cpp  -   Main code designed to run on LilyGo ESP32
+
+    This code consists of five main functions:
+    - void init_modem() initializes the modem by calling modem_on() repeatedly until the modem powers on, and 
+    subsequently acquires and prints modem information;
+    - void connect() is used to connect the device to MQTT over 4G connection by calling connectGPRS() and connectMQTT();
+    - void init_camera() initializes the camera using pins and variables as defined in the camera_config structure;
+    - void take_picture() is used to take a picture and send it in JPEG format to the MQTT broker. As a result, 
+    pictures taken in other formats are converted to JPEG first;
+    - void sendCurrentTime() obtains the current timestamp and sends it to the Arduino Every.
+
+    In void setup() the functions init_modem(), init_camera(), and connect() are called, in order to initialize modem and camera and 
+    properly connect the device to internet. The functions that are called in void loop() are determined by the Arduino input and processed
+    using a switch-case structure. The following Arduino input is possible:
+    - '?' requests the state of the ESP32, which will respond with 'y' if connected. Otherwise connect() is called;
+    - 't' calls sendCurrentTime() in order to communicate the current timestamp to Arduino;
+    - 's' reads an incoming json message from Arduino and publishes it to MQTT;
+    - 'm' is used for debugging purposes only and prints messages from Arduino to the Serial Monitor.;
+    - 'p' calls take_picture() once and sends a JPG image to MQTT;
+    - 'v' calls take_picture() repeatedly to send a series of JPG images to MQTT, which get merged to a MP4 clip on the server side.
+
+    Note that the ESP32 default state is to be shut down. Only if the Arduino opens the FET, the ESP32 will get battery power.
+
+*/
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <ArduinoJson.h>
@@ -39,7 +63,6 @@ const char* topicClip = "device/6/clip";                        // Topic clip
 // Modem pins
 #define uS_TO_S_FACTOR          1000000ULL  // Conversion factor for micro seconds to seconds
 #define TIME_TO_SLEEP           60          // Time ESP32 will go to sleep (in seconds) 
-
 #define PIN_TX                  27
 #define PIN_RX                  26
 #define UART_BAUD               115200
@@ -111,7 +134,7 @@ const long  gmtOffset_sec = 0;
 const int   daylightOffset_sec = 3600;
 unsigned long lastMillis = 0;
 
-// Camera configuration
+// Structure containing all camera pins and variables
 static camera_config_t camera_config = {
     .pin_pwdn = PWDN_GPIO_NUM,
     .pin_reset = RESET_GPIO_NUM,
@@ -140,6 +163,7 @@ static camera_config_t camera_config = {
     .grab_mode = CAMERA_GRAB_LATEST //CAMERA_GRAB_WHEN_EMPTY
 };
 
+// Power on SIM7600 modem
 void modem_on()
 {   
     // The time of active low level impulse of PWRKEY pin to power on module, typically 500 ms
@@ -151,6 +175,7 @@ void modem_on()
     digitalWrite(PWR_PIN, LOW);
     delay(5000);
     
+    // Test modem response
     Serial.println("\nTesting Modem Response...\n");
     Serial.println("****");
     for(int i=0; i < 10; i++){
@@ -169,6 +194,7 @@ void modem_on()
     Serial.println("****\n");
 }
 
+// Initialize modem
 void initModem(){
     DBG("Wait...");
     int retry = 5;
@@ -203,7 +229,7 @@ void initModem(){
     DBG("Modem Info:", modemInfo);    
 }
 
-
+// Connect device to GPRS in order to establish internet connection
 void connectGPRS(){
     // Check if the modem is active or not.
     if (modem.testAT()) {
@@ -244,6 +270,7 @@ void connectGPRS(){
     if (modem.isGprsConnected()) Serial.println("GPRS connected");
 }
 
+// Connect device to MQTT if an internet connection is already present
 void connectMQTT()
 {
     Serial.print("Connecting to "); Serial.print(broker);
@@ -266,6 +293,7 @@ void connectMQTT()
     } else ESP.restart();
 }
 
+// Connect device to MQTT over 4G connection
 void connect()
 {
     // Registrate network
@@ -289,6 +317,7 @@ void connect()
     }
 }
 
+// Get current time and send it to Arduino Every
 void sendCurrentTime()
 {
     struct tm timeinfo;
@@ -309,79 +338,64 @@ void sendCurrentTime()
     }
 }
 
-void sendMqtt()
+// Initalize camera
+void init_camera()
 {
-    // Read data from Arduino and write to MQTT
-    char buffer[256];
-    char character;
-    bool ended = false;
-    size_t n;
-    auto startTime = millis();
-
-    while(!Serial2.available());
-
-    while(!ended && millis() <= startTime + 5000)
-    {
-        bool started = false;
-        n = 0;
-
-        character = Serial.read();
-
-        if(character == '{')
-        {
-            started = true;
-        }
-
-        if(started == true)
-        {
-            buffer[n] = character;
-            n++;
-        }
-
-        if(character == '}')
-        {
-            started = false;
-            ended = true;
-            Serial.println("ended");
-        }
+    Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
+    
+    // Power up the camera if PWDN pin is defined
+    if(PWDN_GPIO_NUM != -1){
+        pinMode(PWDN_GPIO_NUM, OUTPUT);
+        digitalWrite(PWDN_GPIO_NUM, LOW);
     }
-
-    Serial.println(buffer);
-    if(ended == true)
-    {
-        mqtt.publish(topicMeasure, buffer, n);
+    
+    // Init Camera
+    esp_err_t err = esp_camera_init(&camera_config);
+    if (err != ESP_OK) {
+        Serial.printf("Camera init failed with error 0x%x\n", err);
+        return;
+    } else {
+        Serial.printf("Camera init succes\n", err);
+        Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
     }
 }
 
-void testMQTT()
+// Take picture
+void take_picture()
 {
-  mqtt.loop();
-  delay(10);  // <- fixes some issues with WiFi stability
+    camera_fb_t * pic = NULL;
 
-  if (!mqtt.connected()) {
-    connect();
-  }
+    // Take picture with camera
+    pic = esp_camera_fb_get();  
+    if(!pic) {
+        Serial.println("Camera capture failed");
+        return;
+    } else{
+        Serial.println("Camera capture succesful");
+        Serial.println("Format: " + String(pic->format) + "; size: " + String(pic->len));
+        Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
 
-  char testString[] = "{\"temperature\":27,\"humidity\":83,\"time\":1669896000}";
-  
-  StaticJsonDocument<200> doc;
-  doc["temperature"] = 19;
-  doc["humidity"] = 55;
-  doc["time"] = 1669896000;
+        // Format picture as JPG and send to MQTT broker
+        if(pic->format != 4){
+            if(frame2jpg(pic, 80, &cnv_buf, &cnv_buf_len)){
+                Serial.printf("Converted to JPEG, size = %d \n", cnv_buf_len);
+            } else Serial.println("Failed to convert to JPEG");
 
-  // publish a message roughly every second.
-  if (millis() - lastMillis > 1000) 
-  {
-    lastMillis = millis();
-        
-    char buffer[256];
-    size_t n = serializeJson(doc, buffer);
-    Serial.println(buffer);
-    mqtt.publish("device/6/measurement", testString);
-    Serial.println("Data sent");
-    serializeJson(doc, Serial);
-    //Serial.print(doc);
-  }
+            if(mqtt.state()) connect();
+            if(mqtt.publish(topicImage, cnv_buf, cnv_buf_len)){
+                Serial.println("Upload succesfull");
+            } else Serial.printf("Upload failed with error %d \n", mqtt.state());
+            free(cnv_buf);
+        } else{
+            if(mqtt.state()) connect();
+            if(mqtt.publish(topicImage, pic->buf, pic->len)){
+                Serial.println("Upload succesfull");
+            } else Serial.printf("Upload failed with error %d \n", mqtt.state());
+            delay(100);
+        }
+    }
+
+    esp_camera_fb_return(pic);
 }
 
 void setup() 
@@ -407,21 +421,13 @@ void setup()
     digitalWrite(PWR_PIN, HIGH);
     delay(500);
     digitalWrite(PWR_PIN, LOW);
-
-    // Initialize camera
-    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-    // init_camera();
     delay(1000);
 
     SerialAT.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
 
-    // Start modem and connect GPRS
-    modem_on();
-    connectGPRS();
-
-    // Connect to mqtt and test connection
+    // Start modem and connect GPRS and MQTT
     mqtt.setServer(broker, 1883);
-    mqttConnect();
+    if(mqtt.state()) connect();
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
     // MQTT buffer size
@@ -429,29 +435,25 @@ void setup()
     if(mqtt.setBufferSize(65535)) Serial.printf("New buffer size set successfully: %d \n", mqtt.getBufferSize());
     if(mqtt.publish(topicMeasure, "{\"temperature\":16,\"humidity\":53}")) Serial.println("Test data sent succesfully");
 
-    delay(5000);
-
     // Initialize camera
-    //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-    //init_camera();
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+    init_camera();
 }
 
 void loop() 
-{
-    //mqtt.loop();
-    
+{  
     char incoming = 0;
     if(Serial2.available() > 0) incoming = Serial2.read();
 
     switch(incoming)
     {
-    // obtain time and send to arduino
+    // Obtain current time and send to arduino
     case 't':
         Serial.println("Incoming: t");
         sendCurrentTime();
         break;
 
-    // publish json message to mqtt
+    // Publish incoming json message to MQTT
     case 's':
         Serial.println("Incoming: s");
         delay(50);
@@ -473,13 +475,13 @@ void loop()
         }
         break;
 
-    // make a picture and publish to mqtt
+    // Take a picture and publish to MQTT
     case 'p':
         Serial.println("Incoming: p");
         //take_picture(topicImage);
         break;
 
-    // make a video and publish to mqtt
+    // Record a video and publish to MQTT
     case 'v':
         Serial.println("Incoming: v");
         // for(int i=0; i < 75; i++){
@@ -489,7 +491,7 @@ void loop()
         // }
         break;
 
-    // receive message from arduino and show it
+    // Receive incoming message from arduino and print it
     case 'm':
         Serial.println("Incoming: m");
         delay(50);
@@ -500,7 +502,7 @@ void loop()
         }
         break;
     
-    // check connection to mqtt broker
+    // Check connection to MQTT broker
     case '?':
         Serial.println("Incoming: ?");
         if (mqtt.connected()){
@@ -525,132 +527,5 @@ void loop()
         Serial.println("'");
         break;
     }
-
-    // Sleep with external wake up
-    // if (!digitalRead(wakeUpPin))
-    // {
-    //     esp_sleep_enable_ext0_wakeup(wakeUpPin, 1);
-    //     esp_deep_sleep_start();
-    // }
-
-    //testMQTT();
 }
-//*/
-
-////////////////////////////////////////////////////////////
-
-
-
-
-// //void connect() {
-//     int i = 0;
-//     Serial.print("checking wifi...");
-//     while (WiFi.status() != WL_CONNECTED) {
-//         Serial.print(".");
-//         delay(1000); i++;
-//         if (i > 30) ESP.restart();
-//     }
-
-//     Serial.print("\nconnecting,,,");
-//     while (!client.connected()){
-//         // Create a random client ID
-//         String clientId = "ESP32Client-";
-//         clientId += String(random(0xffff), HEX);
-
-//         // Attempt to connect
-//         if (client.connect(clientId.c_str(), mqttUsername, mqttPassword)) {
-//             Serial.println("\nconnected!");
-//         } else{
-//             Serial.print(",");
-//         }
-
-//         delay(1000); i++;
-//         if (i > 60) ESP.restart();
-//     }
-// }
-// //void init_camera()
-// {
-//     // Camera pins
-//     camera_config_t config;
-//     config.ledc_channel = LEDC_CHANNEL_0;
-//     config.ledc_timer = LEDC_TIMER_0;
-//     config.pin_d0 = Y2_GPIO_NUM;
-//     config.pin_d1 = Y3_GPIO_NUM;
-//     config.pin_d2 = Y4_GPIO_NUM;
-//     config.pin_d3 = Y5_GPIO_NUM;
-//     config.pin_d4 = Y6_GPIO_NUM;
-//     config.pin_d5 = Y7_GPIO_NUM;
-//     config.pin_d6 = Y8_GPIO_NUM;
-//     config.pin_d7 = Y9_GPIO_NUM;
-//     config.pin_xclk = XCLK_GPIO_NUM;
-//     config.pin_pclk = PCLK_GPIO_NUM;
-//     config.pin_vsync = VSYNC_GPIO_NUM;
-//     config.pin_href = HREF_GPIO_NUM;
-//     config.pin_sccb_sda = SIOD_GPIO_NUM;
-//     config.pin_sccb_scl = SIOC_GPIO_NUM;
-//     config.pin_pwdn = PWDN_GPIO_NUM;
-//     config.pin_reset = RESET_GPIO_NUM;
-//     config.xclk_freq_hz = 15000000;
-//     config.pixel_format = PIXFORMAT_RGB565;
-//     config.fb_location    = CAMERA_FB_IN_PSRAM;     // The location where the frame buffer will be allocated
-//     config.grab_mode      = CAMERA_GRAB_LATEST;     // When buffers should be filled
-
-//     config.frame_size = FRAMESIZE_SVGA;
-//     config.jpeg_quality = 20;
-//     config.fb_count = 1;
-
-//     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
-    
-//     // Init Camera
-//     esp_err_t err = esp_camera_init(&config);
-//     if (err != ESP_OK) {
-//         Serial.printf("Camera init failed with error 0x%x\n", err);
-//         return;
-//     } else {
-//         Serial.printf("Camera init succes\n", err);
-//     }
-// }
-// //void take_picture(const char* publishChannel)
-// {
-//     camera_fb_t * pic = NULL;
-
-//     // Take Picture with Camera
-//     pic = esp_camera_fb_get();  
-//     if(!pic) {
-//         Serial.println("Camera capture failed");
-//         return;
-//     } else{
-//         Serial.println("Camera capture succesful");
-//         Serial.println("Format: " + String(pic->format) + "; size: " + String(pic->len));
-//         bool sent;
-
-//         if(pic->format != 4){
-//             bool isConverted = frame2jpg(pic, 80, &cnv_buf, &cnv_buf_len);
-//             if(isConverted){
-//                 Serial.printf("Converted to JPEG, size = %d \n", cnv_buf_len);
-//             } else{
-//                 Serial.println("Failed to convert to JPEG");
-//             } 
-//             if (!client.connected()) connect();
-            
-//             sent = client.publish(publishChannel, cnv_buf, cnv_buf_len);
-//         } else{
-//             if (!client.connected()) connect();
-//             sent = client.publish(publishChannel, pic->buf, pic->len);
-//         }
-
-//         if (!sent){
-//             int err = client.state();
-//             Serial.printf("Upload failed with error %d \n", err);
-//         } else{
-//             Serial.println("Upload succesfull");
-//         }
-//     }
-
-//     free(cnv_buf);
-//     esp_camera_fb_return(pic);
-// }
-
-
-
 //*/

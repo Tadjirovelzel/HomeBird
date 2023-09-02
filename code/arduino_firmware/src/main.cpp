@@ -1,4 +1,4 @@
-/* arduino_firmware/src/main.cpp   -   Main code designed to run on the Arduino Nano Every. 
+/* arduino_firmware/src/main.cpp   -   Main code designed to run on the Arduino Nano Every
 
   All sensors are connected to the Nano, and sensor data is stored on a SD card. The Nano every also controls whether or not the ESP32 is powered on.
   This code is built as a state machine, with the states defined first and the transitions between different states second. Six different states are defined:
@@ -11,9 +11,10 @@
     -s6_video() calls the ESP32 to take a video;
 
   After any state with a connection to the ESP32 (i.e. internet connection), state S4 is called to obtain the current time. After any other state a 
-  transition is made to the ground state S0 in order to put the Nano Every in sleep mode and save power.
+  transition is made to ground state S0 in order to put the Nano Every in sleep mode and save power.
   
-  The use of delay is minimized throughout the code, sleep_cpu() is used instead in order to save power.
+  The use of delay() is minimized throughout the code, sleep_cpu() is used instead in order to save power.
+
 */
 
 #include <Arduino.h>
