@@ -1,6 +1,7 @@
 The project NestWacht in collaboration with the TU Delft and other benefactors aims to design a sensor station in the form of a birdhouse that uses a camera and weather sensors to document bird activity and monitor properties of the local atmosphere such as humidity, pressure and particulate matter levels. 
 This file serves to outline the structure and purpose of the folders contained within the project.
 
+# Project Structure
 The essential project structure is displayed below:
 
     -Code
@@ -16,16 +17,15 @@ The essential project structure is displayed below:
         -gerbers
 
     The project also contains the complete material bill and the login information for the Node Developer platform.
-    Some irrelevant and older development code is stores in the legacy_code folder. 
-
+    Some irrelevant and older development code is stored in the legacy_code folder. 
 
 
 The electronical components were initally designed by Maarten van Schagen and Quinten Luyten. Tadjiro Velzel further implemented the design and attempted to correct inital mistakes.
-The programming necessary to ensure correct and smooth operation of the board and the server was done by Lennard Duynkerke
+The programming necessary to ensure correct and smooth operation of the board and the server was done by Lennard Duynkerke.
 The enclosure of the electronics was designed by Thomas van Leeuwen.
 The project was overseen and managed by Marit Bogert and Teun Verkerk.
 
-
+# Hardware
 The main board contains the following components, split into sections.
 
     Power systems section:
@@ -65,7 +65,11 @@ The Camera Board contains the following:
 
 To contain the electronics mentioned above, a plastic enclosure made, printed in PETG by 3d-printer. The design files for this are available in the enclosure folder.
 
-Problems:
+# Software
+The software is split in two parts: arduino_firmware and esp_firmware. The former is designed for the Arduino Every, the main computational unit that is always powered on and operates sensors, sd card, and the power of the ESP32. The latter is ran on the LilyGo ESP32 and is used to communicate with the outer world over a 4G connection, as well as to take pictures with the OV2640 camera. Two test files are added in order to test a specific part of the software, test_camera to test the camera either over WiFi or over 4G and test_video to record an .avi video by sticking individual .jpg files together. For a more detailed description of the software one is directed to the headers of the individual .cpp files.
+
+# Problems
+Currently the project contains the following issues:
     -Sim module will not send large pictures
     -Camera init and capture is inconsistent, bound to inconsistency of the camera connector
     -Pin assignment in code does not correspond to PCB design files: PCB files are incorrect and can never work: pin assignment in software is correct.
