@@ -52,9 +52,9 @@ The main board contains the following components, split into sections.
         - A Sim-card to route information accross the internet
         - An SD card that stores the sensor data before sending it
 
-The Camera Board contains the following:
+The Camera Board contains the following components:
 
-    - An OV2640 camera operating within the infrared spectrum 
+    - An OV2640 camera operating within the visible and infrared spectra 
     - A 24 pin camera connector, soldered to the board
     - A network of capacitors to smooth the voltages of the camera connector and voltage regulators
     - A 2.8V and 1.2V voltage regulator to supply the camera
@@ -66,15 +66,15 @@ The Camera Board contains the following:
 To contain the electronics mentioned above, a plastic enclosure made, printed in PETG by 3d-printer. The design files for this are available in the enclosure folder.
 
 # Software
-The software is split in two parts: arduino_firmware and esp_firmware. The former is designed for the Arduino Every, the main computational unit that is always powered on and operates sensors, sd card, and the power of the ESP32. The latter is ran on the LilyGo ESP32 and is used to communicate with the outer world over a 4G connection, as well as to take pictures with the OV2640 camera. Two test files are added in order to test a specific part of the software, test_camera to test the camera either over WiFi or over 4G and test_video to record an .avi video by sticking individual .jpg files together. For a more detailed description of the software one is directed to the headers of the individual .cpp files.
+The software is split in two parts: `arduino_firmware` and `esp_firmware`. The former is designed for the Arduino Every, the main computational unit which is always powered on and operates sensors, sd card, and power to the ESP32. The latter is ran on the LilyGo ESP32 and is used to communicate with the outer world over a 4G connection, as well as to take pictures with the OV2640 camera. Two test files are added in order to test a specific part of the software, `test_camera` to test the camera either over WiFi or over 4G and `test_video` to record an .avi video by sticking individual .jpg files together. For a more detailed description of the software one is directed to the headers of the individual .cpp files.
 
 # Problems
 Currently the project contains the following issues:
-    -Sim module will not send large pictures
-    -Camera init and capture is inconsistent, bound to inconsistency of the camera connector
-    -Pin assignment in code does not correspond to PCB design files: PCB files are incorrect and can never work: pin assignment in software is correct.
-    -Complete integration was never tested
-    -Likely complete system is too power intensive to drive by solar panel. (Also never tested fully)
+* Sim module will not send large pictures
+* Camera init and capture is inconsistent, bound to inconsistency of the camera connector
+* Pin assignment in code does not correspond to PCB design files: PCB files are incorrect and can never work: pin assignment in software is correct.
+* Complete integration was never tested
+* Likely complete system is too power intensive to drive by solar panel. (Also never tested fully)
 
 
     
