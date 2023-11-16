@@ -1,4 +1,4 @@
-/*
+//*
 #include <Arduino.h>
 #include <HttpClient.h>
 // SIM model
@@ -42,11 +42,11 @@ const char* gprsPass = "";
 // const char *server = "https://nestwacht.free.beeceptor.com"; // Default Upload Address
 // const int port = 80;
 
-const char* serverAddress = "nestwacht2.free.beeceptor.com";
+const char* serverAddress = "nestwacht1.free.beeceptor.com";
 const int serverPort = 80;
 
 //WiFiClient wifiClient;
-HttpClient httpClient = HttpClient(client, serverAddress, serverPort);
+HttpClient http = HttpClient(client, serverAddress, serverPort);
 
 bool reply = false;
 uint32_t lastReconnectAttempt = 0;
@@ -242,30 +242,47 @@ void connect()
     }
 }
 
+
 void upload_pic(uint8_t *pic_buf, size_t len)
 {
-  // Data to be sent in the POST request
-  String postData = "key1=value1&key2=value2";
-
-  // Perform HTTP POST request
-  int statusCode = httpClient.post("/todos", "application/x-www-form-urlencoded", postData);
-
-  // Check if the request was successful
-  if (statusCode == 200) {
-    Serial.println("POST request successful!");
-    Serial.print("Response: ");
-    Serial.println(httpClient.responseBody());
-  } else {
-    Serial.print("Error in POST request. Status code: ");
+    Serial.println(F("Start uploading pictures... "));
+    http.connectionKeepAlive();
+    Serial.println(F("Performing HTTP POST request... "));
+    Serial.println(F("Wait for upload to complete..."));
+    http.beginRequest();
+    http.post(serverAddress);
+    http.sendHeader("Content-Type", "image/jpg");
+    http.sendHeader("picpath", "/todos");
+    // http.sendHeader("Accept-Encoding", "gzip, deflate, br");
+    http.sendHeader("Content-Length", String(len));
+    http.beginBody();
+    uint32_t j = 0;
+    uint32_t shard = 1426;
+    for (int32_t i = len; i > 0;) {
+        if (i >= shard) {
+            http.write((const uint8_t *)(pic_buf + shard * j), shard);
+            i -= shard;
+            j++;
+        } else {
+            http.write((const uint8_t *)(pic_buf + shard * j), i);
+            break;
+        }
+    }
+    http.endRequest();
+    // read the status code and body of the response
+    int statusCode = http.responseStatusCode();
+    String response = http.responseBody();
+    Serial.print("Status code: ");
     Serial.println(statusCode);
-    Serial.print("Error message: ");
-    Serial.println(httpClient.responseBody());
-  }
+    Serial.print("Response: ");
+    Serial.println(response);
+    // Shutdown
+    http.stop();
+    Serial.println(F("Server disconnected"));
 
-  // Delay before the next iteration
-  delay(50000);
-
+    delay(20000);
 }
+
 
 
 void init_camera()
@@ -339,13 +356,7 @@ void setup()
     SerialAT.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
     connect();
 
-
     delay(10000);
-
-    // Initialize camera (disable to initialize camera after sim)
-    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
-    // init_camera();
-
 }
 
 void loop()
@@ -357,12 +368,8 @@ void loop()
         SerialAT.write(Serial.read());
     }
 
-    //mqtt.publish(topicMeasure, "{\"temperature\":16,\"humidity\":53}");
-    //Serial2.print("Data sent"); SerialMon.println("Data sent");
     take_picture();
-    // mqtt.loop();
-    //if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
-    delay(1000);
+    delay(50000);
 }
 
 
