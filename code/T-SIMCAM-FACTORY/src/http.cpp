@@ -1,57 +1,68 @@
-#define TINY_GSM_MODEM_SIM7600
-// #define DUMP_AT_COMMANDS
-
-#include "esp_camera.h"
+//*
+#include <Arduino.h>
 #include <ArduinoHttpClient.h>
-#include <ArduinoJson.h>
-#include <HardwareSerial.h>
-#include <PubSubClient.h>
-#ifdef DUMP_AT_COMMANDS
-#include <StreamDebugger.h>
-#endif
+// SIM model
+#define TINY_GSM_MODEM_SIM7600
+
+// Set serial for debug console, AT commands and debug prints
+#define SerialMon Serial
+#define SerialAT Serial1
+#define TINY_GSM_DEBUG SerialMon
+#define TINY_GSM_YIELD_MS 2
+
+// Set TinyGsm en MQTT
 #include <TinyGsmClient.h>
-// WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
-//            Ensure ESP32 Wrover Module or other board with PSRAM is selected
-//            Partial images will be transmitted if image exceeds buffer size
-//
-//            You must select partition scheme from the board menu that has at least 3MB APP space.
-//            Face Recognition is DISABLED for ESP32 and ESP32-S2, because it takes up from 15
-//            seconds to process single frame. Face Detection is ENABLED if PSRAM is enabled as well
-// #include "camera_pins.h"
-/**
- * Enter your APP credentials
- *
- * Refer to (documentation)[https://cloud.bemfa.com/docs/#/],
- * create an application, obtain the following information and fill in it.
- */
+#include <PubSubClient.h>
+TinyGsm modem(SerialAT);
+TinyGsmClient client(modem);
+PubSubClient mqtt(client);
 
-/**********************************************************/
-// User private key, obtained from Bafa Cloud console
-const char *uid = "********************************";
-// Theme name, which can be created in the console
-const char *topic = "picture";
-// If it is not empty, it will be pushed to wechat and can be modified at will to modify it to the message you need to send
-const char *wechatMsg = "Hello +T-SIMCAM";
-// If it is not empty, it will be pushed to the enterprise wechat. The message pushed to the enterprise wechat can be modified at will and modified to
-// the message that needs to be sent
-const char *wecomMsg = "";
-// If the value is not empty, a custom image link will be generated to define the image URL returned after the image is uploaded. The first part of
-// the URL is the Bafa cloud domain name, the second part is the MD5 value of the private key + subject name, and the third part is the set image link
-// value.
-const char *urlPath = "";
+// set GSM PIN and apn details
+#define GSM_PIN "0000"
 
-/**********************************************************/
-// MQTT details
-const char *mqtt_uid = "********************************";
-const char *broker = "bemfa.com";
+const char* apn = "m2m.tele2.com";
+const char* gprsUser = "";
+const char* gprsPass = "";
 
-const char *topicMsg = "msg";
-/* Need to create a topic application named 'topicMsg' */
+// // MQTT details
+// const char* broker = "excellent-engraver.cloudmqtt.com"; // Public IP address or domain name
+// const char* mqttUsername = "fnrfeqot";                   // MQTT username
+// const char* mqttPassword = "P-1Ta8Utd1Pj";               // MQTT password
+// const char* topicMeasure = "device/5/measurement";       // topic measurement data
+// const char* topicImage = "device/5/img";                 // topic images
 
-const char *take_cmd = "take";
+// Modem pins
+#define uS_TO_S_FACTOR          1000000ULL  // Conversion factor for micro seconds to seconds
+#define TIME_TO_SLEEP           60          // Time ESP32 will go to sleep (in seconds) 
 
-/**********************************************************/
+#define PIN_TX                  45
+#define PIN_RX                  46
+#define UART_BAUD               115200
+#define PWR_PIN                 48
+#define LED_PIN                 21
 
+
+HttpClient http(client, server_url, port);
+const char *server_url = "https://nestwacht.free.beeceptor.com"; // Default Upload Address
+const int port = 80;
+
+
+bool reply = false;
+uint32_t lastReconnectAttempt = 0;
+size_t cnv_buf_len;
+uint8_t * cnv_buf = NULL;
+
+// Camera related
+#include "esp_camera.h"
+#include "soc/soc.h"           // Disable brownout problems
+#include "soc/rtc_cntl_reg.h"  // Disable brownout problems
+#include "driver/rtc_io.h"
+
+
+// Camera model
+#define CAMERA_MODEL_AI_THINKER_MODIFIED
+
+// Pin definition for camera models
 #define PWDN_GPIO_NUM     -1
 #define RESET_GPIO_NUM    -1
 #define XCLK_GPIO_NUM      14
@@ -69,15 +80,6 @@ const char *take_cmd = "take";
 #define VSYNC_GPIO_NUM    6
 #define HREF_GPIO_NUM     7
 #define PCLK_GPIO_NUM     13
-
-#define uS_TO_S_FACTOR          1000000ULL  // Conversion factor for micro seconds to seconds
-#define TIME_TO_SLEEP           60          // Time ESP32 will go to sleep (in seconds) 
-
-#define PIN_TX                  45
-#define PIN_RX                  46
-#define UART_BAUD               115200
-#define PWR_PIN                 48
-#define LED_PIN                 21
 
 static camera_config_t camera_config = {
     .pin_pwdn = PWDN_GPIO_NUM,
@@ -109,167 +111,111 @@ static camera_config_t camera_config = {
     //.fb_location    = CAMERA_FB_IN_PSRAM, // The location where the frame buffer will be allocated
 };
 
-/**********************************************************/
-
-static bool take_state = false;
-
-#if !defined(TINY_GSM_RX_BUFFER)
-#define TINY_GSM_RX_BUFFER 650
-#endif
-#define TINY_GSM_USE_GPRS true
-
-// set GSM PIN and apn details
-#define GSM_PIN "0000"
-
-const char* apn = "m2m.tele2.com";
-const char* gprsUser = "";
-const char* gprsPass = "";
-
-// Server details
-const char *server_url = "https://nestwacht.free.beeceptor.com"; // Default Upload Address
-const char *post_url = "/upload/v1/upimages.php";
-const int port = 80;
-#define Serial Serial
-
-#ifdef DUMP_AT_COMMANDS
-StreamDebugger debugger(Serial1, Serial);
-TinyGsm modem(Sedebuggerrial1);
-#else
-TinyGsm modem(Serial1);
-#endif
-
-TinyGsmClient client(modem);
-HttpClient http(client, server_url, port);
-PubSubClient mqtt(client);
-
-void upload_pic(uint8_t *pic_buf, size_t len, const char *topic, const char *wechatMsg, const char *wecomMsg, const char *urlPath);
-
-void setup()
+void modem_on()
 {
-    Serial.begin(115200);
-    Serial.setDebugOutput(true);
-    Serial.println();
-#if defined(CAMERA_MODEL_TTGO_T_CAM_SIM)
-    pinMode(PWR_ON_PIN, OUTPUT);
-    digitalWrite(PWR_ON_PIN, HIGH);
-#endif
-
-    Serial1.begin(115200, SERIAL_8N1, PCIE_RX_PIN, PCIE_TX_PIN);
-    pinMode(PCIE_PWR_PIN, OUTPUT);
-    digitalWrite(PCIE_PWR_PIN, 1);
+    // Disable camera
+    // for(int i=0; i < 12; i++){
+    //     digitalWrite(i, LOW);
+    //     digitalWrite(32, HIGH);
+    // }
+    
+    // The time of active low level impulse of PWRKEY pin to power on module, typically 500 ms
+    Serial.println("\nStarting Up Modem...");
+    SerialAT.begin(115200, SERIAL_8N1, PIN_RX, PIN_TX);
+    delay(100);
+    pinMode(PWR_PIN, OUTPUT);
+    digitalWrite(PWR_PIN, 1);
     delay(500);
-    digitalWrite(PCIE_PWR_PIN, 0);
-    Serial.println("Wait...");
-    // TinyGsmAutoBaud(Serial1, 9600, 115200);
+    digitalWrite(PWR_PIN, 0);
     delay(3000);
-    Serial.println("Initializing modem...");
-    modem.init();
-    String modemInfo = modem.getModemInfo();
-    Serial.print("Modem Info: ");
-    Serial.println(modemInfo);
-
-    camera_config_t config;
-    config.ledc_channel = LEDC_CHANNEL_0;
-    config.ledc_timer = LEDC_TIMER_0;
-    config.pin_d0 = Y2_GPIO_NUM;
-    config.pin_d1 = Y3_GPIO_NUM;
-    config.pin_d2 = Y4_GPIO_NUM;
-    config.pin_d3 = Y5_GPIO_NUM;
-    config.pin_d4 = Y6_GPIO_NUM;
-    config.pin_d5 = Y7_GPIO_NUM;
-    config.pin_d6 = Y8_GPIO_NUM;
-    config.pin_d7 = Y9_GPIO_NUM;
-    config.pin_xclk = XCLK_GPIO_NUM;
-    config.pin_pclk = PCLK_GPIO_NUM;
-    config.pin_vsync = VSYNC_GPIO_NUM;
-    config.pin_href = HREF_GPIO_NUM;
-    config.pin_sccb_sda = SIOD_GPIO_NUM;
-    config.pin_sccb_scl = SIOC_GPIO_NUM;
-    config.pin_pwdn = PWDN_GPIO_NUM;
-    config.pin_reset = RESET_GPIO_NUM;
-    config.xclk_freq_hz = 20000000;
-    config.frame_size = FRAMESIZE_UXGA;
-    config.pixel_format = PIXFORMAT_JPEG; // for streaming
-    // config.pixel_format = PIXFORMAT_RGB565; // for face detection/recognition
-    config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
-    config.fb_location = CAMERA_FB_IN_PSRAM;
-    config.jpeg_quality = 12;
-    config.fb_count = 1;
-
-    // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
-    // for larger pre-allocated frame buffer.
-    if (config.pixel_format == PIXFORMAT_JPEG) {
-        if (psramFound()) {
-            config.jpeg_quality = 10;
-            config.fb_count = 2;
-            config.grab_mode = CAMERA_GRAB_LATEST;
-        } else {
-            // Limit the frame size when PSRAM is not available
-            config.frame_size = FRAMESIZE_SVGA;
-            config.fb_location = CAMERA_FB_IN_DRAM;
+    
+    Serial.println("\nTesting Modem Response...\n");
+    Serial.println("****");
+    for(int i=0; i < 10; i++){
+        SerialAT.println("AT");
+        delay(500);
+        if (SerialAT.available()) {
+            String r = SerialAT.readString();
+            Serial.println(r);
+            if ( r.indexOf("OK") >= 0 ) {
+                reply = true;
+                break;
+            }
         }
-    } else {
-        // Best option for face detection/recognition
-        config.frame_size = FRAMESIZE_UXGA;
-#if CONFIG_IDF_TARGET_ESP32S3
-        config.fb_count = 2;
-#endif
+        delay(500);
+    }
+    Serial.println("****\n");
+}
+
+void initModem(){
+    DBG("Wait...");
+    int retry = 5;
+    while (!reply && retry--){
+        modem_on();
     }
 
-#if defined(CAMERA_MODEL_ESP_EYE)
-    pinMode(13, INPUT_PULLUP);
-    pinMode(14, INPUT_PULLUP);
-#endif
-
-    // camera init
-    esp_err_t err = esp_camera_init(&config);
-    if (err != ESP_OK) {
-        Serial.printf("Camera init failed with error 0x%x", err);
+    if (reply) {
+        Serial.println(F("***********************************************************"));
+        Serial.println(F(" You can now send AT commands"));
+        Serial.println(F(" Enter \"AT\" (without quotes), and you should see \"OK\""));
+        Serial.println(F(" If it doesn't work, select \"Both NL & CR\" in Serial Monitor"));
+        Serial.println(F(" DISCLAIMER: Entering AT commands without knowing what they do"));
+        Serial.println(F(" can have undesired consiquinces..."));
+        Serial.println(F("***********************************************************\n"));
+    } else {
+        Serial.println(F("***********************************************************"));
+        Serial.println(F(" Failed to connect to the modem! Check the baud and try again."));
+        Serial.println(F("***********************************************************\n"));
         return;
     }
 
-    sensor_t *s = esp_camera_sensor_get();
-    // initial sensors are flipped vertically and colors are a bit saturated
-    if (s->id.PID == OV3660_PID) {
-        s->set_vflip(s, 0);       // flip it back
-        s->set_brightness(s, 1);  // up the brightness just a bit
-        s->set_saturation(s, -2); // lower the saturation
-    }
-    s->set_vflip(s, 1);
-    // drop down frame size for higher initial frame rate
-    if (config.pixel_format == PIXFORMAT_JPEG) {
-        s->set_framesize(s, FRAMESIZE_UXGA);
-    }
+    // Modem info
+    String ret;
+    ret = modem.setNetworkMode(38);
+    DBG("setNetworkMode:", ret);
 
-#if defined(CAMERA_MODEL_M5STACK_WIDE) || defined(CAMERA_MODEL_M5STACK_ESP32CAM)
-    s->set_vflip(s, 1);
-    s->set_hmirror(s, 1);
-#endif
+    String name = modem.getModemName();
+    DBG("Modem Name:", name);
 
-#if defined(CAMERA_MODEL_ESP32S3_EYE)
-    s->set_vflip(s, 1);
-#endif
-
-    // // MQTT Broker setup
-    // mqtt.setServer(broker, 9501);
-    // mqtt.setCallback(mqttCallback);
+    String modemInfo = modem.getModemInfo();
+    DBG("Modem Info:", modemInfo);    
 }
 
-void loop()
-{
+
+void connectGPRS(){
+    // Check if the modem is active or not.
+    if (modem.testAT()) {
+        Serial.println("Modem is active.");
+    } else {
+        Serial.println("Modem is not active.");
+        if(!modem.restart()){
+            Serial.println("Restart failed");
+            return;
+        }
+    }
+
+    //     // Check if the modem is active or not.
+    //     if (modem.testAT()) {
+    //       Serial.println("Modem is active.");
+    //     } else {
+    //       Serial.println("Modem is not active.");
+    //       initModem();
+    //     }   
+
+    // Unlock SIM card with a PIN if needed
+    if (GSM_PIN && modem.getSimStatus() != 3) modem.simUnlock(GSM_PIN);
+
+    // Registrate network
     Serial.print("Waiting for network...");
     if (!modem.waitForNetwork()) {
-        Serial.println(" fail");
+        Serial.println("fail");
         delay(10000);
         return;
     }
-    Serial.println(" success");
+    Serial.println("Success!");
 
-    if (modem.isNetworkConnected()) {
-        Serial.println("Network connected");
-    }
+    if (modem.isNetworkConnected()) Serial.println("Network connected");
 
-#if TINY_GSM_USE_GPRS
     // GPRS connection parameters are usually set after network registration
     Serial.print(F("Connecting to "));
     Serial.print(apn);
@@ -280,34 +226,158 @@ void loop()
     }
     Serial.println(" success");
 
-    if (modem.isGprsConnected()) {
-        Serial.println("GPRS connected");
+    // Check connection
+    if (modem.isGprsConnected()) Serial.println("GPRS connected");
+}
+
+// void connectMQTT()
+// {
+//     Serial.print("Connecting to "); Serial.print(broker);
+
+//     for (int i = 0; i < 30; i++){
+//         // Create a random client ID
+//         String clientId = "ESP32Client-";
+//         clientId += String(random(0xffff), HEX);
+
+//         // Attempt to connect
+//         if (mqtt.connect(clientId.c_str(), mqttUsername, mqttPassword)) {
+//             Serial.println("\nconnected!");
+//             break;
+//         } else Serial.print(".");
+//         delay(1000);
+//     }
+
+//     if(mqtt.connected()){
+//         Serial.println("MQTT Connected!");
+//     } else ESP.restart();
+// }
+
+void connect()
+{
+    // Registrate network
+    if (!modem.isGprsConnected()) {
+        Serial.println("GPRS disconnected!");
+        initModem(); connectGPRS();
     }
-#endif
 
-    Serial.printf("After initialization, send  \"%s\"  command to upload the picture\r\n", take_cmd);
+    // Connect MQTT
+    // if (modem.isGprsConnected() && !mqtt.connected()) {
+    //     Serial.println("=== MQTT NOT CONNECTED ===");
+        
+    //     // Reconnect every 10 seconds
+    //     uint32_t t = millis();
+    //     if (t - lastReconnectAttempt > 100L) {
+    //         lastReconnectAttempt = t;
+    //         connectMQTT();
+    //     }
+    //     delay(100);
+    //     return;
+    // }
+}
 
-    while (true) {
-
-        Serial.println("To upload pictures");
-        camera_fb_t *pic = NULL;
-        pic = esp_camera_fb_get();
-        if (!pic) {
-            Serial.println("Camera capture failed");
-            break;
-        }
-        upload_pic(pic->buf, pic->len, topic, wechatMsg, wecomMsg, urlPath);
-        esp_camera_fb_return(pic);
-        // do { // After uploading the image, reconnect to the MQTT server and report the information
-        //     mqtt.connect(mqtt_uid);
-        //     mqtt.subscribe(topicMsg);
-        // } while (!mqtt.connected());
-        Serial.println("Pictures have been uploaded.");
-        take_state = false;
+void init_camera()
+{
+    Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
+    
+    // Power up the camera if PWDN pin is defined
+    if(PWDN_GPIO_NUM != -1){
+        pinMode(PWDN_GPIO_NUM, OUTPUT);
+        digitalWrite(PWDN_GPIO_NUM, LOW);
+    }
+    
+    // Init Camera
+    esp_err_t err = esp_camera_init(&camera_config);
+    if (err != ESP_OK) {
+        Serial.printf("Camera init failed with error 0x%x\n", err);
+        return;
+    } else {
+        Serial.printf("Camera init succes\n", err);
+        Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
     }
 }
 
-void upload_pic(uint8_t *pic_buf, size_t len, const char *topic, const char *wechatMsg, const char *wecomMsg, const char *urlPath)
+void take_picture()
+{
+    camera_fb_t * pic = NULL;
+
+    // Take Picture with Camera
+    pic = esp_camera_fb_get();  
+    if(!pic) {
+        Serial.println("Camera capture failed");
+        return;
+    } else{
+        Serial.println("Camera capture succesful");
+        Serial.println("Format: " + String(pic->format) + "; size: " + String(pic->len));
+        Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
+
+        if(pic->format != 4){
+            if(frame2jpg(pic, 80, &cnv_buf, &cnv_buf_len)){
+                Serial.printf("Converted to JPEG, size = %d \n", cnv_buf_len);
+            } else Serial.println("Failed to convert to JPEG");
+        }
+    }
+    // Upload picture using http
+    upload_pic(pic->buf, pic->len);
+    Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
+    free(cnv_buf); esp_camera_fb_return(pic);
+}
+
+void setup()
+{
+    // Set console baud rate
+    SerialMon.begin(115200);
+    Serial2.begin(115200, SERIAL_8N1, 14, 4);
+    Serial.println("Hello world!");
+    delay(10);
+
+    // Pin mode of modem pins
+    pinMode(LED_PIN, OUTPUT);       // Onboard LED light, it can be used freely
+    pinMode(PWR_PIN, OUTPUT);       // PWR_PIN ： This Pin is the PWR-KEY of the SIM7600
+
+    // Initialize camera (enable to initialize camera before sim)
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+    init_camera();
+    delay(1000);
+
+    SerialAT.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
+
+    // // Start modem and connect GPRS and MQTT
+    // mqtt.setServer(broker, 1883);
+    // if(mqtt.state()) connect();
+
+    // // MQTT buffer size
+    // Serial.printf("Buffer size: %d \n", mqtt.getBufferSize());
+    // bool buff = mqtt.setBufferSize(65535);
+    // if(buff) Serial.printf("New buffer size set successfully: %d \n", mqtt.getBufferSize());
+    // Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
+
+    delay(10000);
+
+    // Initialize camera (disable to initialize camera after sim)
+    // WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
+    // init_camera();
+
+}
+
+void loop()
+{
+    while (SerialAT.available()) {
+        Serial.write(SerialAT.read());
+    }
+    while (Serial.available()) {
+        SerialAT.write(Serial.read());
+    }
+
+    //mqtt.publish(topicMeasure, "{\"temperature\":16,\"humidity\":53}");
+    //Serial2.print("Data sent"); SerialMon.println("Data sent");
+    take_picture();
+    // mqtt.loop();
+    //if(mqtt.publish(topicMeasure, "{\"temperature\":1,\"humidity\":2,\"pressure\":3,\"temperature2\":4,\"humidity2\":5,\"pressure2\":6}")) Serial.println("Test data sent succesfully");
+    delay(1000);
+}
+
+
+void upload_pic(uint8_t *pic_buf, size_t len)
 {
     Serial.println(F("Start uploading pictures... "));
     http.connectionKeepAlive();
@@ -316,11 +386,6 @@ void upload_pic(uint8_t *pic_buf, size_t len, const char *topic, const char *wec
     http.beginRequest();
     http.post(post_url);
     http.sendHeader("Content-Type", "image/jpg");
-    http.sendHeader("Authorization", uid);
-    http.sendHeader("Authtopic", topic);
-    http.sendHeader("wechatmsg", wechatMsg);
-    http.sendHeader("wecommsg", wecomMsg);
-    http.sendHeader("picpath", urlPath);
     // http.sendHeader("Accept-Encoding", "gzip, deflate, br");
     http.sendHeader("Content-Length", String(len));
     http.beginBody();
@@ -348,19 +413,4 @@ void upload_pic(uint8_t *pic_buf, size_t len, const char *topic, const char *wec
     http.stop();
     Serial.println(F("Server disconnected"));
 }
-
-// void mqttCallback(char *topic, byte *payload, unsigned int len)
-// {
-//     Serial.print("Message arrived [");
-//     Serial.print(topic);
-//     Serial.print("]: ");
-//     Serial.write(payload, len);
-//     Serial.println();
-
-//     // Only proceed if incoming message's topic matches
-//     if (String(topic) == topicMsg) {
-//         if (String((char *)payload, len) == String(take_cmd)) {
-//             take_state = true;
-//         }
-//     }
-// }
+//*/
