@@ -12,10 +12,8 @@
 
 // Set TinyGsm en MQTT
 #include <TinyGsmClient.h>
-#include <PubSubClient.h>
 TinyGsm modem(SerialAT);
 TinyGsmClient client(modem);
-PubSubClient mqtt(client);
 
 // set GSM PIN and apn details
 #define GSM_PIN "0000"
