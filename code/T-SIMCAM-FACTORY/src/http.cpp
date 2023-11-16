@@ -41,10 +41,9 @@ const char* gprsPass = "";
 #define PWR_PIN                 48
 #define LED_PIN                 21
 
-
-HttpClient http(client, server_url, port);
 const char *server_url = "https://nestwacht.free.beeceptor.com"; // Default Upload Address
 const int port = 80;
+HttpClient http(client, server_url, port);
 
 
 bool reply = false;
@@ -274,7 +273,42 @@ void connect()
     //     return;
     // }
 }
-
+void upload_pic(uint8_t *pic_buf, size_t len)
+{
+    Serial.println(F("Start uploading pictures... "));
+    http.connectionKeepAlive();
+    Serial.println(F("Performing HTTP POST request... "));
+    Serial.println(F("Wait for upload to complete..."));
+    http.beginRequest();
+    http.post(server_url);
+    http.sendHeader("Content-Type", "image/jpg");
+    // http.sendHeader("Accept-Encoding", "gzip, deflate, br");
+    http.sendHeader("Content-Length", String(len));
+    http.beginBody();
+    uint32_t j = 0;
+    uint32_t shard = 1426;
+    for (int32_t i = len; i > 0;) {
+        if (i >= shard) {
+            http.write((const uint8_t *)(pic_buf + shard * j), shard);
+            i -= shard;
+            j++;
+        } else {
+            http.write((const uint8_t *)(pic_buf + shard * j), i);
+            break;
+        }
+    }
+    http.endRequest();
+    // read the status code and body of the response
+    int statusCode = http.responseStatusCode();
+    String response = http.responseBody();
+    Serial.print("Status code: ");
+    Serial.println(statusCode);
+    Serial.print("Response: ");
+    Serial.println(response);
+    // Shutdown
+    http.stop();
+    Serial.println(F("Server disconnected"));
+}
 void init_camera()
 {
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
@@ -377,40 +411,5 @@ void loop()
 }
 
 
-void upload_pic(uint8_t *pic_buf, size_t len)
-{
-    Serial.println(F("Start uploading pictures... "));
-    http.connectionKeepAlive();
-    Serial.println(F("Performing HTTP POST request... "));
-    Serial.println(F("Wait for upload to complete..."));
-    http.beginRequest();
-    http.post(post_url);
-    http.sendHeader("Content-Type", "image/jpg");
-    // http.sendHeader("Accept-Encoding", "gzip, deflate, br");
-    http.sendHeader("Content-Length", String(len));
-    http.beginBody();
-    uint32_t j = 0;
-    uint32_t shard = 1426;
-    for (int32_t i = len; i > 0;) {
-        if (i >= shard) {
-            http.write((const uint8_t *)(pic_buf + shard * j), shard);
-            i -= shard;
-            j++;
-        } else {
-            http.write((const uint8_t *)(pic_buf + shard * j), i);
-            break;
-        }
-    }
-    http.endRequest();
-    // read the status code and body of the response
-    int statusCode = http.responseStatusCode();
-    String response = http.responseBody();
-    Serial.print("Status code: ");
-    Serial.println(statusCode);
-    Serial.print("Response: ");
-    Serial.println(response);
-    // Shutdown
-    http.stop();
-    Serial.println(F("Server disconnected"));
-}
+
 //*/
