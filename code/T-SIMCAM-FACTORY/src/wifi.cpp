@@ -1,4 +1,4 @@
-/*
+//*
 #include <Arduino.h>
 #include <SPI.h>
 #include <WiFi.h>
@@ -7,7 +7,8 @@
 const char* ssid = "Moto Lennard";
 const char* password = "hotspotlennard";
 
-const char* serverAddress = "nestwacht.free.beeceptor.com";
+// const char* serverAddress = "https://eoltyrafh9ilblr.m.pipedream.net";
+const char* serverAddress = "https://pleasework.free.beeceptor.com";
 const int serverPort = 80;
 
 WiFiClient wifiClient;
@@ -71,4 +72,4 @@ void loop() {
 //   // Delay before the next iteration
 //   delay(5000);  // Adjust as needed
 // }
-*/
+//*/

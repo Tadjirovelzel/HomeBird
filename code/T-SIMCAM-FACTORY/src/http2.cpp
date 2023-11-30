@@ -1,4 +1,4 @@
-//*
+/*
 #include <Arduino.h>
 #include <HttpClient.h>
 // SIM model
@@ -10,25 +10,6 @@
 #define TINY_GSM_DEBUG SerialMon
 #define TINY_GSM_YIELD_MS 2
 
-// Set TinyGsm en MQTT
-#include <TinyGsmClient.h>
-TinyGsm modem(SerialAT);
-TinyGsmClient client(modem);
-
-// set GSM PIN and apn details
-#define GSM_PIN "0000"
-
-const char* apn = "m2m.tele2.com";
-const char* gprsUser = "";
-const char* gprsPass = "";
-
-// // MQTT details
-// const char* broker = "excellent-engraver.cloudmqtt.com"; // Public IP address or domain name
-// const char* mqttUsername = "fnrfeqot";                   // MQTT username
-// const char* mqttPassword = "P-1Ta8Utd1Pj";               // MQTT password
-// const char* topicMeasure = "device/5/measurement";       // topic measurement data
-// const char* topicImage = "device/5/img";                 // topic images
-
 // Modem pins
 #define uS_TO_S_FACTOR          1000000ULL  // Conversion factor for micro seconds to seconds
 #define TIME_TO_SLEEP           60          // Time ESP32 will go to sleep (in seconds) 
@@ -39,13 +20,19 @@ const char* gprsPass = "";
 #define PWR_PIN                 48
 #define LED_PIN                 21
 
-// const char *server = "https://nestwacht.free.beeceptor.com"; // Default Upload Address
-// const int port = 80;
+// set GSM PIN and apn, http details
+#define GSM_PIN "0000"
 
-const char* serverAddress = "nestwacht1.free.beeceptor.com";
+const char* apn = "m2m.tele2.com";
+const char* gprsUser = "";
+const char* gprsPass = "";
+const char* serverAddress = "https://pleasework.free.beeceptor.com";
 const int serverPort = 80;
 
-//WiFiClient wifiClient;
+// Declare TinyGSM, and HTTP client 
+#include <TinyGsmClient.h>
+TinyGsm modem(SerialAT);
+TinyGsmClient client(modem);
 HttpClient http = HttpClient(client, serverAddress, serverPort);
 
 bool reply = false;
@@ -306,6 +293,30 @@ void init_camera()
     }
 }
 
+void httpPost(){
+    Serial.println("Start HTTP post request");
+    // Data to be sent in the POST request
+    String postData = "key1=value1&key2=value2";
+
+    // Perform HTTP POST request
+    int statusCode = http.post("/todos", "application/x-www-form-urlencoded", postData);
+
+    // Check if the request was successful
+    if (statusCode == 200) {
+    Serial.println("POST request successful!");
+    Serial.print("Response: ");
+    Serial.println(http.responseBody());
+    } else {
+    Serial.print("Error in POST request. Status code: ");
+    Serial.println(statusCode);
+    Serial.print("Error message: ");
+    Serial.println(http.responseBody());
+    }
+
+    // Delay before the next iteration
+    delay(5000);
+}
+
 void take_picture()
 {
     camera_fb_t * pic = NULL;
@@ -327,12 +338,14 @@ void take_picture()
         }
     }
     
-    if (!modem.isGprsConnected()) connect();
+    while (!modem.isGprsConnected()) connect();
     // Upload picture using http
-    upload_pic(pic->buf, pic->len);
+    httpPost();
+    //upload_pic(pic->buf, pic->len);
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
     free(cnv_buf); esp_camera_fb_return(pic);
 }
+
 
 void setup()
 {
@@ -371,7 +384,5 @@ void loop()
     take_picture();
     delay(50000);
 }
-
-
 
 //*/
