@@ -1,4 +1,4 @@
-/*
+//*
 // Modem pins
 #define SerialMon Serial
 #define uS_TO_S_FACTOR          1000000ULL  // Conversion factor for micro seconds to seconds
@@ -63,7 +63,7 @@ static camera_config_t camera_config = {
     .ledc_channel = LEDC_CHANNEL_0,
     .pixel_format = PIXFORMAT_JPEG,
     //.pixel_format = PIXFORMAT_RGB565,
-    .frame_size = FRAMESIZE_QHD,
+    .frame_size = FRAMESIZE_VGA,
     .jpeg_quality = 50,
     .fb_count = 1,
     .grab_mode = CAMERA_GRAB_LATEST // When buffers should be filled CAMERA_GRAB_WHEN_EMPTY

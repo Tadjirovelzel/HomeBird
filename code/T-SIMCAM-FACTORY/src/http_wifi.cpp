@@ -1,4 +1,4 @@
-/*
+//*
 #include <Arduino.h>
 #include <SPI.h>
 #include <WiFi.h>
@@ -7,7 +7,7 @@
 const char* ssid = "Moto Lennard";
 const char* password = "hotspotlennard";
 
-const char* serverAddress = "https://pleasework.free.beeceptor.com";
+const char* serverAddress = "pleasework.free.beeceptor.com";
 const int serverPort = 80;
 
 WiFiClient wifiClient;
@@ -21,14 +21,14 @@ uint8_t * cnv_buf = NULL;
 
 void upload_pic(uint8_t *pic_buf, size_t len)
 {
-    Serial.println(F("Start uploading pictures... "));
+    Serial.printf("Start uploading pictures with length %d \n",len);
     client.connectionKeepAlive();
     Serial.println(F("Performing HTTP POST request... "));
     Serial.println(F("Wait for upload to complete..."));
     client.beginRequest();
     client.post(serverAddress);
     client.sendHeader("Content-Type", "image/jpg");
-    client.sendHeader("picpath", "/todos");
+    client.sendHeader("picpath", "/img");
     // client.sendHeader("Accept-Encoding", "gzip, deflate, br");
     client.sendHeader("Content-Length", String(len));
     client.beginBody();
@@ -36,7 +36,8 @@ void upload_pic(uint8_t *pic_buf, size_t len)
     uint32_t shard = 1426;
     for (int32_t i = len; i > 0;) {
         if (i >= shard) {
-            client.write((const uint8_t *)(pic_buf + shard * j), shard);
+            size_t num_bytes_sent = client.write((const uint8_t *)(pic_buf + shard * j), shard);
+            Serial.printf("%d bytes sent \n", num_bytes_sent);
             i -= shard;
             j++;
         } else {
@@ -44,6 +45,28 @@ void upload_pic(uint8_t *pic_buf, size_t len)
             break;
         }
     }
+    
+    // size_t max_chunk_size = 1426; //4096;
+    // uint8_t chunk_buf[max_chunk_size];
+    // size_t current_position = 0;
+    // while (current_position < len)
+    // {
+    //     size_t chunk_size = 0;
+    //     for(size_t i=0;i<max_chunk_size;i++)
+    //     {
+    //         if(current_position + i < len)
+    //         {
+    //             chunk_size += 1;
+    //             chunk_buf[i] = pic_buf[current_position + i];
+    //         }
+    //     }
+    //     size_t num_bytes_sent = client.write(chunk_buf, chunk_size);
+
+    //     Serial.printf("%d bytes sent \n",num_bytes_sent);
+
+    //     current_position += max_chunk_size;
+    // }
+    
     client.endRequest();
     // read the status code and body of the response
     int statusCode = client.responseStatusCode();
@@ -59,6 +82,30 @@ void upload_pic(uint8_t *pic_buf, size_t len)
     delay(20000);
 }
 
+// {
+//     _command_helper.write(head, 1000);
+
+//     size_t max_chunk_size = 4096;
+//     uint8_t chunk_buf[max_chunk_size];
+//     size_t current_position = 0;
+//     while (current_position < size)
+//     {
+//         size_t chunk_size = 0;
+//         for(size_t i=0;i<max_chunk_size;i++)
+//         {
+//             if(current_position + i < size)
+//             {
+//                 chunk_size += 1;
+//                 chunk_buf[i] = buf[current_position + i];
+//             }
+//         }
+//         size_t num_bytes_sent = _command_helper.write(chunk_buf, chunk_size, 2000);
+
+//         current_position += max_chunk_size;
+//     }
+
+//     _command_helper.write(tail, 1000);
+// }
 
 
 void init_camera()
@@ -149,7 +196,7 @@ void take_picture()
   
     // Upload picture using http
     httpPost();
-    //upload_pic(pic->buf, pic->len);
+    upload_pic(pic->buf, pic->len);
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
     free(cnv_buf); esp_camera_fb_return(pic);
 }

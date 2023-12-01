@@ -1,3 +1,4 @@
+/*
 // Camera related
 #include "esp_camera.h"
 #include "soc/soc.h"           // Disable brownout problems
@@ -56,3 +57,4 @@ static camera_config_t camera_config = {
     .grab_mode = CAMERA_GRAB_LATEST // When buffers should be filled CAMERA_GRAB_WHEN_EMPTY
     //.fb_location    = CAMERA_FB_IN_PSRAM, // The location where the frame buffer will be allocated
 };
+//*/
