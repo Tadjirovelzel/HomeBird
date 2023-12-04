@@ -4,10 +4,12 @@
 #include <WiFi.h>
 #include <HttpClient.h> 
 #include "Cameraconfig.h"
+
 const char* ssid = "Moto Lennard";
 const char* password = "hotspotlennard";
 
-const char* serverAddress = "pleasework.free.beeceptor.com";
+//const char* serverAddress = "pleasework.free.beeceptor.com";
+const char* serverAddress = "http://z7y6g.wiremockapi.cloud";//pleasework.free.beeceptor.com";
 const int serverPort = 80;
 
 WiFiClient wifiClient;
@@ -18,11 +20,14 @@ uint32_t lastReconnectAttempt = 0;
 size_t cnv_buf_len;
 uint8_t * cnv_buf = NULL;
 
+// rlc::Console console(Serial);
+// HardwareSerial SerialAT(1);
+// rlc::AtCommand command_helper(SerialAT, console, false);
 
 void upload_pic(uint8_t *pic_buf, size_t len)
 {
     Serial.printf("Start uploading pictures with length %d \n",len);
-    client.connectionKeepAlive();
+    //client.connectionKeepAlive();
     Serial.println(F("Performing HTTP POST request... "));
     Serial.println(F("Wait for upload to complete..."));
     client.beginRequest();
@@ -33,7 +38,7 @@ void upload_pic(uint8_t *pic_buf, size_t len)
     client.sendHeader("Content-Length", String(len));
     client.beginBody();
     uint32_t j = 0;
-    uint32_t shard = 1426;
+    uint32_t shard = 4096; //1426;
     for (int32_t i = len; i > 0;) {
         if (i >= shard) {
             size_t num_bytes_sent = client.write((const uint8_t *)(pic_buf + shard * j), shard);
@@ -196,6 +201,7 @@ void take_picture()
   
     // Upload picture using http
     httpPost();
+    //rlc::Http::post_file_buffer("pleasework.free.beeceptor.com", pic->buf, pic->len);
     upload_pic(pic->buf, pic->len);
     Serial.printf("PSRAM Total heap %d, PSRAM Free Heap %d\n",ESP.getPsramSize(),ESP.getFreePsram());
     free(cnv_buf); esp_camera_fb_return(pic);

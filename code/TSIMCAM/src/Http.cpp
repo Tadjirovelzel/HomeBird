@@ -1,5 +1,4 @@
-/*
-#include "http_lib.h"
+#include "Http.h"
 #include <SD.h>
 
 namespace rlc
@@ -66,6 +65,8 @@ namespace rlc
                 {
                     if (_command_helper.send_command_and_wait("AT+HTTPDATA=" + String(total_size) + ",60000", "DOWNLOAD", 1000))
                     {
+                        _console.println("Starting HTTP request to "+url+" with length: "+String(size));
+
                         _command_helper.write(head, 1000);
 
                         size_t max_chunk_size = 4096;
@@ -83,6 +84,7 @@ namespace rlc
                                 }
                             }
                             size_t num_bytes_sent = _command_helper.write(chunk_buf, chunk_size, 2000);
+                            _console.println("Data sent: "+String(num_bytes_sent)+" bytes");
 
                             current_position += max_chunk_size;
                         }
@@ -102,4 +104,3 @@ namespace rlc
     }
 
 }
-//*/

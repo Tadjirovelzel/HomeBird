@@ -26,7 +26,7 @@
 const char* apn = "m2m.tele2.com";
 const char* gprsUser = "";
 const char* gprsPass = "";
-const char* serverAddress = "https://pleasework.free.beeceptor.com";
+const char* serverAddress = "http://z7y6g.wiremockapi.cloud/json";//pleasework.free.beeceptor.com";
 const int serverPort = 80;
 
 // Declare TinyGSM, and HTTP client 
@@ -46,6 +46,9 @@ uint8_t * cnv_buf = NULL;
 #include "soc/rtc_cntl_reg.h"  // Disable brownout problems
 #include "driver/rtc_io.h"
 
+// rlc::Console console(Serial);
+// HardwareSerial SerialAT(1);
+// rlc::AtCommand command_helper(SerialAT, console, false);
 
 // Camera model
 #define CAMERA_MODEL_AI_THINKER_MODIFIED

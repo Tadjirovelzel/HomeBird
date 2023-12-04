@@ -1,4 +1,3 @@
-/*
 #ifndef Http_h
 #define Http_h
 
@@ -21,4 +20,3 @@ namespace rlc
 }
 
 #endif
-//*/
