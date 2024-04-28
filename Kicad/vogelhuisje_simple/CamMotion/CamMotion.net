@@ -1,0 +1,595 @@
+(export 
+  (version D) 
+  (design 
+    (source /home/quinten/Public/Git/HomeBird/vogelhuisje_kicad/vogelhuisje_kicad.sch) 
+    (date "za 23 apr 2022 15:12:23 CEST") 
+    (tool "Eeschema 5.1.5+dfsg1-2build2") 
+    (sheet 
+      (number 1) 
+      (name /) 
+      (tstamps /) 
+      (title_block 
+        (title) 
+        (company) 
+        (rev) 
+        (date) 
+        (source CamMotion.sch) 
+        (comment 
+          (number 1) 
+          (value "")) 
+        (comment 
+          (number 2) 
+          (value "")) 
+        (comment 
+          (number 3) 
+          (value "")) 
+        (comment 
+          (number 4) 
+          (value "")))) 
+    (sheet 
+      (number 2) 
+      (name "/Power Supply/") 
+      (tstamps /6263B8AD/) 
+      (title_block 
+        (title) 
+        (company) 
+        (rev) 
+        (date) 
+        (source Power_supply.sch) 
+        (comment 
+          (number 1) 
+          (value "")) 
+        (comment 
+          (number 2) 
+          (value "")) 
+        (comment 
+          (number 3) 
+          (value "")) 
+        (comment 
+          (number 4) 
+          (value "")))) 
+    (sheet 
+      (number 3) 
+      (name "/Sensors and microcontrollers/") 
+      (tstamps /6263B902/) 
+      (title_block 
+        (title) 
+        (company) 
+        (rev) 
+        (date) 
+        (source ESP_arduino.sch) 
+        (comment 
+          (number 1) 
+          (value "")) 
+        (comment 
+          (number 2) 
+          (value "")) 
+        (comment 
+          (number 3) 
+          (value "")) 
+        (comment 
+          (number 4) 
+          (value ""))))) 
+  (components 
+    (comp 
+      (ref P1) 
+      (value TP4056breakout) 
+      (footprint Components:TP4056breakout) 
+      (libsource 
+        (lib TP4056-breakout) 
+        (part TP4056breakout) 
+        (description "")) 
+      (sheetpath 
+        (names "/Power Supply/") 
+        (tstamps /6263B8AD/)) 
+      (tstamp 6263DE48)) 
+    (comp 
+      (ref P2) 
+      (value GenericBoostConverter) 
+      (footprint Components:GenericBoostConverter) 
+      (libsource 
+        (lib TP4056-breakout) 
+        (part GenericBoostConverter) 
+        (description "")) 
+      (sheetpath 
+        (names "/Power Supply/") 
+        (tstamps /6263B8AD/)) 
+      (tstamp 6263E192)) 
+    (comp 
+      (ref R1) 
+      (value 100k) 
+      (footprint Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal) 
+      (datasheet ~) 
+      (libsource 
+        (lib Device) 
+        (part R) 
+        (description Resistor)) 
+      (sheetpath 
+        (names "/Power Supply/") 
+        (tstamps /6263B8AD/)) 
+      (tstamp 6263EAD6)) 
+    (comp 
+      (ref D1) 
+      (value D_Zener) 
+      (footprint Diode_SMD:D_SMB_Handsoldering) 
+      (datasheet ~) 
+      (libsource 
+        (lib Device) 
+        (part D_Zener) 
+        (description "Zener diode")) 
+      (sheetpath 
+        (names "/Power Supply/") 
+        (tstamps /6263B8AD/)) 
+      (tstamp 62643FC2)) 
+    (comp 
+      (ref J1) 
+      (value Conn_01x02) 
+      (footprint Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical) 
+      (datasheet ~) 
+      (libsource 
+        (lib Connector_Generic) 
+        (part Conn_01x02) 
+        (description "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)")) 
+      (sheetpath 
+        (names "/Power Supply/") 
+        (tstamps /6263B8AD/)) 
+      (tstamp 62647C4D)) 
+    (comp 
+      (ref Q1) 
+      (value Q_PMOS_GSD) 
+      (footprint Package_TO_SOT_SMD:SOT-23) 
+      (datasheet ~) 
+      (libsource 
+        (lib Device) 
+        (part Q_PMOS_GSD) 
+        (description "P-MOSFET transistor, gate/source/drain")) 
+      (sheetpath 
+        (names "/Power Supply/") 
+        (tstamps /6263B8AD/)) 
+      (tstamp 6264EDFF)) 
+    (comp 
+      (ref J3) 
+      (value USB_C_Receptacle_USB2.0) 
+      (footprint Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12) 
+      (datasheet https://www.usb.org/sites/default/files/documents/usb_type-c.zip) 
+      (libsource 
+        (lib Connector) 
+        (part USB_C_Receptacle_USB2.0) 
+        (description "USB 2.0-only Type-C Receptacle connector")) 
+      (sheetpath 
+        (names "/Power Supply/") 
+        (tstamps /6263B8AD/)) 
+      (tstamp 62654366)) 
+    (comp 
+      (ref J2) 
+      (value Conn_01x02_Female) 
+      (footprint Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical) 
+      (datasheet ~) 
+      (libsource 
+        (lib Connector) 
+        (part Conn_01x02_Female) 
+        (description "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)")) 
+      (sheetpath 
+        (names "/Power Supply/") 
+        (tstamps /6263B8AD/)) 
+      (tstamp 62641E6A))) 
+  (libparts 
+    (libpart 
+      (lib Connector) 
+      (part Conn_01x02_Female) 
+      (description "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)") 
+      (docs ~) 
+      (footprints 
+        (fp Connector*:*_1x??_*)) 
+      (fields 
+        (field 
+          (name Reference) J) 
+        (field 
+          (name Value) Conn_01x02_Female)) 
+      (pins 
+        (pin 
+          (num 1) 
+          (name Pin_1) 
+          (type passive)) 
+        (pin 
+          (num 2) 
+          (name Pin_2) 
+          (type passive)))) 
+    (libpart 
+      (lib Connector) 
+      (part USB_C_Receptacle_USB2.0) 
+      (description "USB 2.0-only Type-C Receptacle connector") 
+      (docs https://www.usb.org/sites/default/files/documents/usb_type-c.zip) 
+      (footprints 
+        (fp USB*C*Receptacle*)) 
+      (fields 
+        (field 
+          (name Reference) J) 
+        (field 
+          (name Value) USB_C_Receptacle_USB2.0)) 
+      (pins 
+        (pin 
+          (num A1) 
+          (name GND) 
+          (type power_in)) 
+        (pin 
+          (num A4) 
+          (name VBUS) 
+          (type power_in)) 
+        (pin 
+          (num A5) 
+          (name CC1) 
+          (type BiDi)) 
+        (pin 
+          (num A6) 
+          (name D+) 
+          (type BiDi)) 
+        (pin 
+          (num A7) 
+          (name D-) 
+          (type BiDi)) 
+        (pin 
+          (num A8) 
+          (name SBU1) 
+          (type BiDi)) 
+        (pin 
+          (num A9) 
+          (name VBUS) 
+          (type passive)) 
+        (pin 
+          (num A12) 
+          (name GND) 
+          (type passive)) 
+        (pin 
+          (num B1) 
+          (name GND) 
+          (type passive)) 
+        (pin 
+          (num B4) 
+          (name VBUS) 
+          (type passive)) 
+        (pin 
+          (num B5) 
+          (name CC2) 
+          (type BiDi)) 
+        (pin 
+          (num B6) 
+          (name D+) 
+          (type BiDi)) 
+        (pin 
+          (num B7) 
+          (name D-) 
+          (type BiDi)) 
+        (pin 
+          (num B8) 
+          (name SBU2) 
+          (type BiDi)) 
+        (pin 
+          (num B9) 
+          (name VBUS) 
+          (type passive)) 
+        (pin 
+          (num B12) 
+          (name GND) 
+          (type passive)) 
+        (pin 
+          (num S1) 
+          (name SHIELD) 
+          (type passive)))) 
+    (libpart 
+      (lib Connector_Generic) 
+      (part Conn_01x02) 
+      (description "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)") 
+      (docs ~) 
+      (footprints 
+        (fp Connector*:*_1x??_*)) 
+      (fields 
+        (field 
+          (name Reference) J) 
+        (field 
+          (name Value) Conn_01x02)) 
+      (pins 
+        (pin 
+          (num 1) 
+          (name Pin_1) 
+          (type passive)) 
+        (pin 
+          (num 2) 
+          (name Pin_2) 
+          (type passive)))) 
+    (libpart 
+      (lib Device) 
+      (part D_Zener) 
+      (description "Zener diode") 
+      (docs ~) 
+      (footprints 
+        (fp TO-???*) 
+        (fp *_Diode_*) 
+        (fp *SingleDiode*) 
+        (fp D_*)) 
+      (fields 
+        (field 
+          (name Reference) D) 
+        (field 
+          (name Value) D_Zener)) 
+      (pins 
+        (pin 
+          (num 1) 
+          (name K) 
+          (type passive)) 
+        (pin 
+          (num 2) 
+          (name A) 
+          (type passive)))) 
+    (libpart 
+      (lib Device) 
+      (part Q_PMOS_GSD) 
+      (description "P-MOSFET transistor, gate/source/drain") 
+      (docs ~) 
+      (fields 
+        (field 
+          (name Reference) Q) 
+        (field 
+          (name Value) Q_PMOS_GSD)) 
+      (pins 
+        (pin 
+          (num 1) 
+          (name G) 
+          (type input)) 
+        (pin 
+          (num 2) 
+          (name S) 
+          (type passive)) 
+        (pin 
+          (num 3) 
+          (name D) 
+          (type passive)))) 
+    (libpart 
+      (lib Device) 
+      (part R) 
+      (description Resistor) 
+      (docs ~) 
+      (footprints 
+        (fp R_*)) 
+      (fields 
+        (field 
+          (name Reference) R) 
+        (field 
+          (name Value) R)) 
+      (pins 
+        (pin 
+          (num 1) 
+          (name ~) 
+          (type passive)) 
+        (pin 
+          (num 2) 
+          (name ~) 
+          (type passive)))) 
+    (libpart 
+      (lib TP4056-breakout) 
+      (part GenericBoostConverter) 
+      (fields 
+        (field 
+          (name Reference) P) 
+        (field 
+          (name Value) GenericBoostConverter)) 
+      (pins 
+        (pin 
+          (num 1) 
+          (name Vin+) 
+          (type input)) 
+        (pin 
+          (num 2) 
+          (name GND) 
+          (type input)) 
+        (pin 
+          (num 3) 
+          (name Vout+) 
+          (type output)) 
+        (pin 
+          (num 4) 
+          (name GND) 
+          (type output)))) 
+    (libpart 
+      (lib TP4056-breakout) 
+      (part TP4056breakout) 
+      (fields 
+        (field 
+          (name Reference) P) 
+        (field 
+          (name Value) TP4056breakout)) 
+      (pins 
+        (pin 
+          (num 1) 
+          (name Vin+) 
+          (type input)) 
+        (pin 
+          (num 2) 
+          (name GND) 
+          (type input)) 
+        (pin 
+          (num 3) 
+          (name OUT+) 
+          (type output)) 
+        (pin 
+          (num 4) 
+          (name B+) 
+          (type output)) 
+        (pin 
+          (num 5) 
+          (name B-) 
+          (type output)) 
+        (pin 
+          (num 6) 
+          (name OUT-) 
+          (type output))))) 
+  (libraries 
+    (library 
+      (logical Connector) 
+      (uri /usr/share/kicad/library/Connector.lib)) 
+    (library 
+      (logical Connector_Generic) 
+      (uri /usr/share/kicad/library/Connector_Generic.lib)) 
+    (library 
+      (logical Device) 
+      (uri /usr/share/kicad/library/Device.lib)) 
+    (library 
+      (logical TP4056-breakout) 
+      (uri /media/quinten/SeagateBackupII/Backup/KiCad/Components/4056breakout.lib))) 
+  (nets 
+    (net 
+      (code 1) 
+      (name "Net-(J3-PadB6)") 
+      (node 
+        (ref J3) 
+        (pin B6))) 
+    (net 
+      (code 2) 
+      (name "/Power Supply/5V") 
+      (node 
+        (ref J3) 
+        (pin A9)) 
+      (node 
+        (ref J3) 
+        (pin A4)) 
+      (node 
+        (ref J3) 
+        (pin B4)) 
+      (node 
+        (ref P2) 
+        (pin 3)) 
+      (node 
+        (ref J3) 
+        (pin B9))) 
+    (net 
+      (code 3) 
+      (name "Net-(J3-PadB8)") 
+      (node 
+        (ref J3) 
+        (pin B8))) 
+    (net 
+      (code 4) 
+      (name "Net-(J3-PadB7)") 
+      (node 
+        (ref J3) 
+        (pin B7))) 
+    (net 
+      (code 5) 
+      (name "Net-(J3-PadB5)") 
+      (node 
+        (ref J3) 
+        (pin B5))) 
+    (net 
+      (code 6) 
+      (name "Net-(J3-PadA8)") 
+      (node 
+        (ref J3) 
+        (pin A8))) 
+    (net 
+      (code 7) 
+      (name "Net-(J3-PadA7)") 
+      (node 
+        (ref J3) 
+        (pin A7))) 
+    (net 
+      (code 8) 
+      (name "Net-(J3-PadA6)") 
+      (node 
+        (ref J3) 
+        (pin A6))) 
+    (net 
+      (code 9) 
+      (name "Net-(J3-PadA5)") 
+      (node 
+        (ref J3) 
+        (pin A5))) 
+    (net 
+      (code 10) 
+      (name GND) 
+      (node 
+        (ref R1) 
+        (pin 2)) 
+      (node 
+        (ref J2) 
+        (pin 1)) 
+      (node 
+        (ref P1) 
+        (pin 2)) 
+      (node 
+        (ref P1) 
+        (pin 6)) 
+      (node 
+        (ref P2) 
+        (pin 2)) 
+      (node 
+        (ref P2) 
+        (pin 4)) 
+      (node 
+        (ref J3) 
+        (pin A1)) 
+      (node 
+        (ref J3) 
+        (pin B12)) 
+      (node 
+        (ref J3) 
+        (pin S1)) 
+      (node 
+        (ref J3) 
+        (pin B1)) 
+      (node 
+        (ref J3) 
+        (pin A12))) 
+    (net 
+      (code 11) 
+      (name "Net-(D1-Pad1)") 
+      (node 
+        (ref Q1) 
+        (pin 2)) 
+      (node 
+        (ref P2) 
+        (pin 1)) 
+      (node 
+        (ref D1) 
+        (pin 1))) 
+    (net 
+      (code 12) 
+      (name "Net-(J1-Pad2)") 
+      (node 
+        (ref P1) 
+        (pin 5)) 
+      (node 
+        (ref J1) 
+        (pin 2))) 
+    (net 
+      (code 13) 
+      (name "Net-(D1-Pad2)") 
+      (node 
+        (ref J2) 
+        (pin 2)) 
+      (node 
+        (ref P1) 
+        (pin 1)) 
+      (node 
+        (ref D1) 
+        (pin 2)) 
+      (node 
+        (ref R1) 
+        (pin 1)) 
+      (node 
+        (ref Q1) 
+        (pin 1))) 
+    (net 
+      (code 14) 
+      (name "Net-(J1-Pad1)") 
+      (node 
+        (ref J1) 
+        (pin 1)) 
+      (node 
+        (ref Q1) 
+        (pin 3)) 
+      (node 
+        (ref P1) 
+        (pin 3)) 
+      (node 
+        (ref P1) 
+        (pin 4)))))

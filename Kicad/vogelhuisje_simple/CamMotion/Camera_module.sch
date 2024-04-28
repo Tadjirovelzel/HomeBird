@@ -1,0 +1,466 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 4 4
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Connector:Conn_01x26_Female J?
+U 1 1 626F059A
+P 3600 3700
+F 0 "J?" H 3628 3676 50  0000 L CNN
+F 1 "Camera Connector" H 3628 3585 50  0000 L CNN
+F 2 "Connector_FFC-FPC:Hirose_FH12-24S-0.5SH_1x24-1MP_P0.50mm_Horizontal" H 3600 3700 50  0001 C CNN
+F 3 "~" H 3600 3700 50  0001 C CNN
+	1    3600 3700
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 626F1652
+P 4850 4300
+F 0 "#PWR?" H 4850 4050 50  0001 C CNN
+F 1 "GND" H 4855 4127 50  0000 C CNN
+F 2 "" H 4850 4300 50  0001 C CNN
+F 3 "" H 4850 4300 50  0001 C CNN
+	1    4850 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4850 4300 4850 4200
+Wire Wire Line
+	3800 2500 3900 2500
+Wire Wire Line
+	3900 2500 3900 2400
+Connection ~ 3900 2400
+Wire Wire Line
+	3900 2400 3800 2400
+$Comp
+L Device:C C2
+U 1 1 626F6B4B
+P 4600 4200
+F 0 "C2" V 4348 4200 50  0000 C CNN
+F 1 "15pF" V 4439 4200 50  0000 C CNN
+F 2 "" H 4638 4050 50  0001 C CNN
+F 3 "~" H 4600 4200 50  0001 C CNN
+	1    4600 4200
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:C C1
+U 1 1 626F7135
+P 4600 3600
+F 0 "C1" V 4348 3600 50  0000 C CNN
+F 1 "100n" V 4439 3600 50  0000 C CNN
+F 2 "" H 4638 3450 50  0001 C CNN
+F 3 "~" H 4600 3600 50  0001 C CNN
+	1    4600 3600
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R1
+U 1 1 626F76BD
+P 4650 3300
+F 0 "R1" V 4443 3300 50  0000 C CNN
+F 1 "1k" V 4534 3300 50  0000 C CNN
+F 2 "" V 4580 3300 50  0001 C CNN
+F 3 "~" H 4650 3300 50  0001 C CNN
+	1    4650 3300
+	0    1    1    0   
+$EndComp
+Text HLabel 3950 4400 2    50   Input ~ 0
+CSI_D0
+Text HLabel 3950 4600 2    50   Input ~ 0
+CSI_D1
+Text HLabel 3950 4700 2    50   Input ~ 0
+CSI_D2
+Text HLabel 3950 4500 2    50   Input ~ 0
+CSI_D3
+Text HLabel 3950 4300 2    50   Input ~ 0
+CSI_D4
+Text HLabel 3950 4100 2    50   Input ~ 0
+CSI_D5
+Text HLabel 3950 3900 2    50   Input ~ 0
+CSI_D6
+Text HLabel 3950 3700 2    50   Input ~ 0
+CSI_D7
+Text HLabel 3950 3800 2    50   Input ~ 0
+CSI_MCLK
+Text HLabel 3950 3400 2    50   Input ~ 0
+CSI_HSYNC
+Text HLabel 3950 3200 2    50   Input ~ 0
+CSI_VSYNC
+Text HLabel 3950 3100 2    50   Input ~ 0
+CAM_RST
+Text HLabel 3950 3000 2    50   Input ~ 0
+TWI_SCK
+Text HLabel 3950 2800 2    50   Input ~ 0
+TWI_SDA
+Wire Wire Line
+	4750 4200 4850 4200
+Connection ~ 4850 4200
+Wire Wire Line
+	4750 3600 4850 3600
+Wire Wire Line
+	4850 3300 4800 3300
+Wire Wire Line
+	4850 3300 4850 3600
+Wire Wire Line
+	4850 3300 4850 2700
+Wire Wire Line
+	3900 2400 4850 2400
+Connection ~ 4850 3300
+Wire Wire Line
+	4500 3300 3800 3300
+Connection ~ 4850 3600
+Wire Wire Line
+	4850 3600 4850 4000
+Wire Wire Line
+	4450 3600 3800 3600
+Wire Wire Line
+	4450 4200 3800 4200
+Wire Wire Line
+	3800 2800 3950 2800
+Wire Wire Line
+	3800 3000 3950 3000
+Wire Wire Line
+	3800 3100 3950 3100
+Wire Wire Line
+	3800 3200 3950 3200
+Wire Wire Line
+	3800 3400 3950 3400
+Wire Wire Line
+	3800 3700 3950 3700
+Wire Wire Line
+	3800 3800 3950 3800
+Wire Wire Line
+	3800 3900 3950 3900
+Wire Wire Line
+	3800 4100 3950 4100
+Wire Wire Line
+	3800 4300 3950 4300
+Wire Wire Line
+	3800 4400 3950 4400
+Wire Wire Line
+	3800 4500 3950 4500
+Wire Wire Line
+	3800 4600 3950 4600
+Wire Wire Line
+	3800 4700 3950 4700
+Wire Wire Line
+	3800 4000 4850 4000
+Connection ~ 4850 4000
+Wire Wire Line
+	4850 4000 4850 4200
+Wire Wire Line
+	3800 2700 4850 2700
+Connection ~ 4850 2700
+Wire Wire Line
+	4850 2700 4850 2400
+NoConn ~ 3950 2600
+NoConn ~ 4000 4800
+NoConn ~ 4000 4900
+Wire Wire Line
+	4000 4900 3800 4900
+Wire Wire Line
+	4000 4800 3800 4800
+Wire Wire Line
+	3950 2600 3800 2600
+Text GLabel 3950 2900 2    50   Input ~ 0
+CSI_2.8V
+Text GLabel 3950 3500 2    50   Input ~ 0
+CSI_1.2V
+Text GLabel 4450 3600 3    50   Input ~ 0
+3V3
+Wire Wire Line
+	3950 3500 3800 3500
+Wire Wire Line
+	3950 2900 3800 2900
+$Comp
+L Regulator_Linear:XC6206PxxxMR U2
+U 1 1 6271743C
+P 6650 3800
+F 0 "U2" H 6650 4042 50  0000 C CNN
+F 1 "XC6206-1.2V" H 6650 3951 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 6650 4025 50  0001 C CIN
+F 3 "https://www.torexsemi.com/file/xc6206/XC6206.pdf" H 6650 3800 50  0001 C CNN
+	1    6650 3800
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 62718CE7
+P 6650 3250
+F 0 "#PWR?" H 6650 3000 50  0001 C CNN
+F 1 "GND" H 6655 3077 50  0000 C CNN
+F 2 "" H 6650 3250 50  0001 C CNN
+F 3 "" H 6650 3250 50  0001 C CNN
+	1    6650 3250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 6271905E
+P 6650 4100
+F 0 "#PWR?" H 6650 3850 50  0001 C CNN
+F 1 "GND" H 6655 3927 50  0000 C CNN
+F 2 "" H 6650 4100 50  0001 C CNN
+F 3 "" H 6650 4100 50  0001 C CNN
+	1    6650 4100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6250 3800 6250 3350
+Text GLabel 6200 3350 0    50   Input ~ 0
+3V3
+Wire Wire Line
+	6200 3350 6250 3350
+Connection ~ 6250 3350
+$Comp
+L Device:C C7
+U 1 1 6271E5C1
+P 6250 3950
+F 0 "C7" H 6365 3996 50  0000 L CNN
+F 1 "10u" H 6365 3905 50  0000 L CNN
+F 2 "" H 6288 3800 50  0001 C CNN
+F 3 "~" H 6250 3950 50  0001 C CNN
+	1    6250 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C3
+U 1 1 6271F0D7
+P 7200 3100
+F 0 "C3" H 7315 3146 50  0000 L CNN
+F 1 "10u" H 7315 3055 50  0000 L CNN
+F 2 "" H 7238 2950 50  0001 C CNN
+F 3 "~" H 7200 3100 50  0001 C CNN
+	1    7200 3100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C4
+U 1 1 6271F4D9
+P 7500 3100
+F 0 "C4" H 7615 3146 50  0000 L CNN
+F 1 "100n" H 7615 3055 50  0000 L CNN
+F 2 "" H 7538 2950 50  0001 C CNN
+F 3 "~" H 7500 3100 50  0001 C CNN
+	1    7500 3100
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C5
+U 1 1 6271F8FB
+P 7150 3950
+F 0 "C5" H 7265 3996 50  0000 L CNN
+F 1 "10u" H 7265 3905 50  0000 L CNN
+F 2 "" H 7188 3800 50  0001 C CNN
+F 3 "~" H 7150 3950 50  0001 C CNN
+	1    7150 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C6
+U 1 1 6271FD3D
+P 7450 3950
+F 0 "C6" H 7565 3996 50  0000 L CNN
+F 1 "100n" H 7565 3905 50  0000 L CNN
+F 2 "" H 7488 3800 50  0001 C CNN
+F 3 "~" H 7450 3950 50  0001 C CNN
+	1    7450 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Regulator_Linear:XC6206PxxxMR U1
+U 1 1 627127F0
+P 6650 2950
+F 0 "U1" H 6650 3192 50  0000 C CNN
+F 1 "XC6206-2.8V" H 6650 3101 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 6650 3175 50  0001 C CIN
+F 3 "https://www.torexsemi.com/file/xc6206/XC6206.pdf" H 6650 2950 50  0001 C CNN
+	1    6650 2950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6250 2950 6250 3350
+Wire Wire Line
+	6250 2950 6350 2950
+Connection ~ 6650 4100
+Wire Wire Line
+	7450 4100 7150 4100
+Wire Wire Line
+	6950 3800 7150 3800
+Wire Wire Line
+	6650 3250 7200 3250
+Connection ~ 6650 3250
+Wire Wire Line
+	6950 2950 7200 2950
+Connection ~ 7150 3800
+Wire Wire Line
+	7150 3800 7450 3800
+Connection ~ 7150 4100
+Wire Wire Line
+	7150 4100 6650 4100
+Wire Wire Line
+	7200 3250 7500 3250
+Connection ~ 7200 3250
+Wire Wire Line
+	7500 2950 7200 2950
+Connection ~ 7200 2950
+Wire Wire Line
+	6250 3800 6350 3800
+Connection ~ 6250 3800
+Wire Wire Line
+	6250 4100 6650 4100
+Text GLabel 7500 3800 2    50   Input ~ 0
+CSI_1.2V
+Text GLabel 7550 2950 2    50   Input ~ 0
+CSI_2.8V
+Wire Wire Line
+	7550 2950 7500 2950
+Connection ~ 7500 2950
+Wire Wire Line
+	7500 3800 7450 3800
+Connection ~ 7450 3800
+Text HLabel 6250 2550 2    50   Input ~ 0
+3V3
+Wire Wire Line
+	6250 2550 6250 2950
+Connection ~ 6250 2950
+Text HLabel 9450 4100 2    50   Input ~ 0
+V_led_switch-
+Text HLabel 8800 2450 2    50   Input ~ 0
+Vbat
+$Comp
+L Device:R R?
+U 1 1 626DA198
+P 9250 4100
+F 0 "R?" V 9043 4100 50  0000 C CNN
+F 1 "R" V 9134 4100 50  0000 C CNN
+F 2 "" V 9180 4100 50  0001 C CNN
+F 3 "~" H 9250 4100 50  0001 C CNN
+	1    9250 4100
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:Q_NMOS_DSG Q?
+U 1 1 626DDEE8
+P 8900 4100
+F 0 "Q?" H 9105 4054 50  0000 L CNN
+F 1 "Q_NMOS_DSG" H 9105 4145 50  0000 L CNN
+F 2 "" H 9100 4200 50  0001 C CNN
+F 3 "~" H 8900 4100 50  0001 C CNN
+	1    8900 4100
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	9400 4100 9450 4100
+$Comp
+L power:GND #PWR?
+U 1 1 626E602C
+P 8800 4300
+F 0 "#PWR?" H 8800 4050 50  0001 C CNN
+F 1 "GND" H 8805 4127 50  0000 C CNN
+F 2 "" H 8800 4300 50  0001 C CNN
+F 3 "" H 8800 4300 50  0001 C CNN
+	1    8800 4300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:LED D?
+U 1 1 626E6646
+P 8650 3450
+F 0 "D?" V 8689 3333 50  0000 R CNN
+F 1 "LED" V 8598 3333 50  0000 R CNN
+F 2 "" H 8650 3450 50  0001 C CNN
+F 3 "~" H 8650 3450 50  0001 C CNN
+	1    8650 3450
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:LED D?
+U 1 1 626E73B6
+P 8950 3450
+F 0 "D?" V 8989 3333 50  0000 R CNN
+F 1 "LED" V 8898 3333 50  0000 R CNN
+F 2 "" H 8950 3450 50  0001 C CNN
+F 3 "~" H 8950 3450 50  0001 C CNN
+	1    8950 3450
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:LED D?
+U 1 1 626E8633
+P 8650 3100
+F 0 "D?" V 8689 2983 50  0000 R CNN
+F 1 "LED" V 8598 2983 50  0000 R CNN
+F 2 "" H 8650 3100 50  0001 C CNN
+F 3 "~" H 8650 3100 50  0001 C CNN
+	1    8650 3100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:LED D?
+U 1 1 626E9899
+P 8950 3100
+F 0 "D?" V 8989 2983 50  0000 R CNN
+F 1 "LED" V 8898 2983 50  0000 R CNN
+F 2 "" H 8950 3100 50  0001 C CNN
+F 3 "~" H 8950 3100 50  0001 C CNN
+	1    8950 3100
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	8950 3250 8950 3300
+Wire Wire Line
+	8950 3250 8650 3250
+Connection ~ 8950 3250
+Wire Wire Line
+	8650 3300 8650 3250
+Connection ~ 8650 3250
+Wire Wire Line
+	8650 3600 8650 3750
+Wire Wire Line
+	8650 3750 8800 3750
+Wire Wire Line
+	8950 3750 8950 3600
+Wire Wire Line
+	8800 3900 8800 3750
+Connection ~ 8800 3750
+Wire Wire Line
+	8800 3750 8950 3750
+Wire Wire Line
+	8650 2950 8650 2900
+Wire Wire Line
+	8650 2900 8800 2900
+Wire Wire Line
+	8950 2900 8950 2950
+$Comp
+L Device:R R?
+U 1 1 626F28F9
+P 8800 2700
+F 0 "R?" H 8870 2746 50  0000 L CNN
+F 1 "R" H 8870 2655 50  0000 L CNN
+F 2 "" V 8730 2700 50  0001 C CNN
+F 3 "~" H 8800 2700 50  0001 C CNN
+	1    8800 2700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8800 2450 8800 2550
+Wire Wire Line
+	8800 2850 8800 2900
+Connection ~ 8800 2900
+Wire Wire Line
+	8800 2900 8950 2900
+$EndSCHEMATC
