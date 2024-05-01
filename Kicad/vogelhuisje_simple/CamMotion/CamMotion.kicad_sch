@@ -1,144 +1,189 @@
-(kicad_sch (version 20211123) (generator eeschema)
-
-  (uuid c23062b8-e5be-482c-a7d3-d12c8591941d)
-
-  (paper "A4")
-
-  (lib_symbols
-  )
-
-
-  (wire (pts (xy 76.2 68.58) (xy 88.9 68.58))
-    (stroke (width 0) (type default) (color 0 0 0 0))
-    (uuid 16479fb2-2563-43f7-b54d-0fdbaae2a443)
-  )
-  (wire (pts (xy 88.9 40.64) (xy 160.02 40.64))
-    (stroke (width 0) (type default) (color 0 0 0 0))
-    (uuid 3bf784fb-426e-4287-90c0-f3165cf52926)
-  )
-  (wire (pts (xy 91.44 72.39) (xy 91.44 44.45))
-    (stroke (width 0) (type default) (color 0 0 0 0))
-    (uuid 3caa7053-d40a-42c5-8cce-d3759fe5b0bb)
-  )
-  (wire (pts (xy 76.2 72.39) (xy 91.44 72.39))
-    (stroke (width 0) (type default) (color 0 0 0 0))
-    (uuid 54568961-b42a-4f33-8d84-04fd27db81f8)
-  )
-  (wire (pts (xy 91.44 44.45) (xy 160.02 44.45))
-    (stroke (width 0) (type default) (color 0 0 0 0))
-    (uuid 6f0d9553-222f-4c16-8584-abf23aeece21)
-  )
-  (wire (pts (xy 88.9 68.58) (xy 88.9 40.64))
-    (stroke (width 0) (type default) (color 0 0 0 0))
-    (uuid e626acaf-3636-47ba-9e75-371a7bf3be1b)
-  )
-
-  (sheet (at 43.18 58.42) (size 33.02 21.59) (fields_autoplaced)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid 00000000-0000-0000-0000-00006263b8ad)
-    (property "Sheet name" "Power Supply" (id 0) (at 43.18 57.7084 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheet file" "Power_supply.kicad_sch" (id 1) (at 43.18 80.5946 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (pin "Vcc" input (at 76.2 68.58 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid 207c11db-1fbc-4ee8-894a-064b8b658488)
-    )
-    (pin "GND" input (at 76.2 72.39 0)
-      (effects (font (size 1.27 1.27)) (justify right))
-      (uuid af714cfd-fca5-4190-8d73-60a022126c09)
-    )
-  )
-
-  (sheet (at 160.02 39.37) (size 41.91 86.36) (fields_autoplaced)
-    (stroke (width 0) (type solid) (color 0 0 0 0))
-    (fill (color 0 0 0 0.0000))
-    (uuid 00000000-0000-0000-0000-00006263b902)
-    (property "Sheet name" "Sensors and microcontrollers" (id 0) (at 160.02 38.6584 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheet file" "ESP_arduino.kicad_sch" (id 1) (at 160.02 126.3146 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (pin "GND" input (at 160.02 44.45 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 331754f9-0b1e-4401-b0ec-8d67f9c8725e)
-    )
-    (pin "Vcc" input (at 160.02 40.64 180)
-      (effects (font (size 1.27 1.27)) (justify left))
-      (uuid 334697a3-3b24-4ad7-a944-d2e95dd77679)
-    )
-  )
-
-  (sheet_instances
-    (path "/" (page "1"))
-    (path "/00000000-0000-0000-0000-00006263b8ad" (page "2"))
-    (path "/00000000-0000-0000-0000-00006263b902" (page "4"))
-  )
-
-  (symbol_instances
-    (path "/00000000-0000-0000-0000-00006263b8ad/00000000-0000-0000-0000-00006263ef5e"
-      (reference "#PWR0103") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/53276018-b274-4986-9b03-014d0b3b6bd3"
-      (reference "#PWR0104") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b902/04fa8928-487a-4899-8bed-f2fe3b8989a5"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/655bbfb0-9527-45c8-9aa8-693b70bac54b"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b902/7b5356d1-6a26-434d-a4c8-a034c3b4dbe6"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/8b32390c-6487-4ae9-91e0-65186e63f7f3"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b902/b3580026-5c84-4e69-9317-c080bdf5f0f9"
-      (reference "#PWR?") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/5750ae3f-4f77-4ff8-8fd5-b76693fa0fb6"
-      (reference "D?") (unit 1) (value "D_Schot") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/e30e354a-54cb-4067-a3a3-e7d7fc5351da"
-      (reference "JBatt1") (unit 1) (value "Batt3") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/00000000-0000-0000-0000-000062647c4d"
-      (reference "JBatt3") (unit 1) (value "Batt1") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/e534b05e-fe08-424c-9712-bb73350e0534"
-      (reference "JBattery2") (unit 1) (value "JBatt2") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
-    )
-    (path "/00000000-0000-0000-0000-00006263b902/2d2a85c4-7630-4529-85e2-4cd3b9d44e07"
-      (reference "JMotion") (unit 1) (value "-") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/00000000-0000-0000-0000-000062641e6a"
-      (reference "JSolar1") (unit 1) (value "Conn_01x02_Female") (footprint "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/00000000-0000-0000-0000-00006263de48"
-      (reference "P1") (unit 1) (value "TP4056breakout") (footprint "Components:TP4056breakout")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/1daa6a74-42b7-4138-ac76-ffde84f66cd2"
-      (reference "P3") (unit 1) (value "TP4056breakout") (footprint "components:TP4056breakout")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/060468a4-5bd2-40fd-b729-62384c3607ac"
-      (reference "P4") (unit 1) (value "TP4056breakout") (footprint "components:TP4056breakout")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/00000000-0000-0000-0000-00006264edff"
-      (reference "Q1") (unit 1) (value "Q_PMOS_DGS") (footprint "Package_TO_SOT_THT:TO-220-3_Vertical")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/fe728427-ca6c-4766-a718-36e91ac9a67e"
-      (reference "Rpulldown") (unit 1) (value "47k") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b902/fec4527b-0ced-4d6e-b146-aec9846593b1"
-      (reference "U?") (unit 1) (value "T-simcam") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00006263b8ad/b9c7392f-72ba-4208-8704-b7bc6f53c61f"
-      (reference "UReg") (unit 1) (value "LM3940") (footprint "Package_TO_SOT_THT:TO-220-3_Vertical")
-    )
-  )
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "c23062b8-e5be-482c-a7d3-d12c8591941d")
+	(paper "A4")
+	(lib_symbols)
+	(wire
+		(pts
+			(xy 76.2 68.58) (xy 88.9 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "16479fb2-2563-43f7-b54d-0fdbaae2a443")
+	)
+	(wire
+		(pts
+			(xy 88.9 40.64) (xy 160.02 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3bf784fb-426e-4287-90c0-f3165cf52926")
+	)
+	(wire
+		(pts
+			(xy 91.44 72.39) (xy 91.44 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3caa7053-d40a-42c5-8cce-d3759fe5b0bb")
+	)
+	(wire
+		(pts
+			(xy 76.2 72.39) (xy 91.44 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "54568961-b42a-4f33-8d84-04fd27db81f8")
+	)
+	(wire
+		(pts
+			(xy 91.44 44.45) (xy 160.02 44.45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6f0d9553-222f-4c16-8584-abf23aeece21")
+	)
+	(wire
+		(pts
+			(xy 88.9 68.58) (xy 88.9 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e626acaf-3636-47ba-9e75-371a7bf3be1b")
+	)
+	(sheet
+		(at 43.18 58.42)
+		(size 33.02 21.59)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "00000000-0000-0000-0000-00006263b8ad")
+		(property "Sheetname" "Power Supply"
+			(at 43.18 57.7084 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Power_supply.kicad_sch"
+			(at 43.18 80.5946 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "Vcc" input
+			(at 76.2 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "207c11db-1fbc-4ee8-894a-064b8b658488")
+		)
+		(pin "GND" input
+			(at 76.2 72.39 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+			(uuid "af714cfd-fca5-4190-8d73-60a022126c09")
+		)
+		(instances
+			(project "CamMotion"
+				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 160.02 39.37)
+		(size 41.91 7.62)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "00000000-0000-0000-0000-00006263b902")
+		(property "Sheetname" "Sensors and microcontrollers"
+			(at 160.02 38.6584 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "ESP_arduino.kicad_sch"
+			(at 160.02 47.5746 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "GND" input
+			(at 160.02 44.45 180)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+			(uuid "331754f9-0b1e-4401-b0ec-8d67f9c8725e")
+		)
+		(pin "Vcc" input
+			(at 160.02 40.64 180)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+			(uuid "334697a3-3b24-4ad7-a944-d2e95dd77679")
+		)
+		(instances
+			(project "CamMotion"
+				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
 )
