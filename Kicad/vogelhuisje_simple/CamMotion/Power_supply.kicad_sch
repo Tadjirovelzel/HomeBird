@@ -298,6 +298,142 @@
 				)
 			)
 		)
+		(symbol "Device:C"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C"
+				(at 0.635 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Unpolarized capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 0.762) (xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "Device:D_Schottky"
 			(pin_numbers hide)
 			(pin_names
@@ -443,7 +579,7 @@
 				)
 			)
 		)
-		(symbol "Device:Q_PMOS_DGS"
+		(symbol "Device:Q_PMOS_GDS"
 			(pin_names
 				(offset 0) hide)
 			(exclude_from_sim no)
@@ -458,7 +594,7 @@
 					(justify left)
 				)
 			)
-			(property "Value" "Q_PMOS_DGS"
+			(property "Value" "Q_PMOS_GDS"
 				(at 5.08 -1.27 0)
 				(effects
 					(font
@@ -485,7 +621,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "P-MOSFET transistor, drain/gate/source"
+			(property "Description" "P-MOSFET transistor, gate/drain/source"
 				(at 0 0 0)
 				(effects
 					(font
@@ -503,7 +639,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "Q_PMOS_DGS_0_1"
+			(symbol "Q_PMOS_GDS_0_1"
 				(polyline
 					(pts
 						(xy 0.254 0) (xy -2.54 0)
@@ -670,11 +806,11 @@
 					)
 				)
 			)
-			(symbol "Q_PMOS_DGS_1_1"
-				(pin passive line
-					(at 2.54 5.08 270)
+			(symbol "Q_PMOS_GDS_1_1"
+				(pin input line
+					(at -5.08 0 0)
 					(length 2.54)
-					(name "D"
+					(name "G"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -689,10 +825,10 @@
 						)
 					)
 				)
-				(pin input line
-					(at -5.08 0 0)
+				(pin passive line
+					(at 2.54 5.08 270)
 					(length 2.54)
-					(name "G"
+					(name "D"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1314,6 +1450,18 @@
 		(uuid "922775f9-b9d3-49e3-9973-d0a2bb91be22")
 	)
 	(junction
+		(at 118.11 63.5)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a3254f35-1e97-405a-9780-86217b233a50")
+	)
+	(junction
+		(at 118.11 86.36)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "bea1f3a2-7d62-405a-9798-064f199397b9")
+	)
+	(junction
 		(at 105.41 62.23)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1363,7 +1511,7 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 58.42) (xy 118.11 55.88)
+			(xy 118.11 55.88) (xy 118.11 63.5)
 		)
 		(stroke
 			(width 0)
@@ -1477,7 +1625,7 @@
 	)
 	(wire
 		(pts
-			(xy 87.63 35.56) (xy 140.97 35.56)
+			(xy 87.63 36.83) (xy 140.97 36.83)
 		)
 		(stroke
 			(width 0)
@@ -1529,7 +1677,7 @@
 	)
 	(wire
 		(pts
-			(xy 87.63 35.56) (xy 87.63 50.8)
+			(xy 87.63 36.83) (xy 87.63 50.8)
 		)
 		(stroke
 			(width 0)
@@ -1602,13 +1750,23 @@
 	)
 	(wire
 		(pts
-			(xy 118.11 76.2) (xy 118.11 73.66)
+			(xy 118.11 88.9) (xy 118.11 86.36)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "8d07c8ab-01f0-4894-8a59-0eefb8a629d5")
+	)
+	(wire
+		(pts
+			(xy 118.11 86.36) (xy 118.11 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "947d8744-36c2-48ac-ac83-749d4bde1f33")
 	)
 	(wire
 		(pts
@@ -1765,6 +1923,16 @@
 	)
 	(wire
 		(pts
+			(xy 118.11 63.5) (xy 118.11 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f17ff37e-b4f2-41e5-9a2b-01b6a6b5e85c")
+	)
+	(wire
+		(pts
 			(xy 41.91 99.06) (xy 46.99 99.06)
 		)
 		(stroke
@@ -1786,7 +1954,7 @@
 	)
 	(wire
 		(pts
-			(xy 140.97 35.56) (xy 140.97 39.37)
+			(xy 140.97 36.83) (xy 140.97 39.37)
 		)
 		(stroke
 			(width 0)
@@ -1796,7 +1964,7 @@
 	)
 	(text "Microcontroller input voltage max is lower than output of solar panel\n"
 		(exclude_from_sim no)
-		(at 160.02 62.23 0)
+		(at 160.274 70.358 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1804,8 +1972,30 @@
 		)
 		(uuid "25d1724a-1e4c-4ccd-9700-19a65bcce84a")
 	)
+	(label "VSolar"
+		(at 127 44.45 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "184e844d-21de-4005-be01-f4a7893ce5a9")
+	)
 	(label "Vbat"
-		(at 87.63 35.56 180)
+		(at 140.97 36.83 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "ad86ae43-1132-4d31-a0d1-b0300b9dc9de")
+	)
+	(label "Vbat"
+		(at 87.63 36.83 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1829,7 +2019,7 @@
 	)
 	(hierarchical_label "Vcc"
 		(shape input)
-		(at 118.11 76.2 180)
+		(at 118.11 88.9 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2119,78 +2309,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:Q_PMOS_DGS")
-		(at 138.43 44.45 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "00000000-0000-0000-0000-00006264edff")
-		(property "Reference" "Q1"
-			(at 143.637 43.2816 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "Q_PMOS_DGS"
-			(at 143.637 45.593 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-220-3_Vertical"
-			(at 143.51 41.91 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 138.43 44.45 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 138.43 44.45 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5237123f-d177-46f7-935d-1f5137fae045")
-		)
-		(pin "2"
-			(uuid "8aad595a-4cfb-434f-8951-219b226f7b16")
-		)
-		(pin "3"
-			(uuid "7dd1447e-39c8-4493-85aa-4d62bbc961df")
-		)
-		(instances
-			(project "CamMotion"
-				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d/00000000-0000-0000-0000-00006263b8ad"
-					(reference "Q1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "TP4056-breakout:TP4056breakout")
 		(at 64.77 77.47 0)
 		(unit 1)
@@ -2264,6 +2382,71 @@
 			(project "CamMotion"
 				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d/00000000-0000-0000-0000-00006263b8ad"
 					(reference "P4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 125.73 63.5 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "0abce541-39bd-455c-9671-f2b1e643ad19")
+		(property "Reference" "#PWR01"
+			(at 132.08 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 125.984 60.198 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 125.73 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 125.73 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 125.73 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "fef0a6b3-8a20-4bfd-8345-1a9076fbbca5")
+		)
+		(instances
+			(project "CamMotion"
+				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d/00000000-0000-0000-0000-00006263b8ad"
+					(reference "#PWR01")
 					(unit 1)
 				)
 			)
@@ -2415,6 +2598,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 125.73 86.36 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "552bc2a4-d657-4501-99f0-4686a5eed762")
+		(property "Reference" "#PWR02"
+			(at 132.08 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 125.984 83.058 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 125.73 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 125.73 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 125.73 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e1fb2bd8-63bc-4f38-8f27-e16ba05317e2")
+		)
+		(instances
+			(project "CamMotion"
+				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d/00000000-0000-0000-0000-00006263b8ad"
+					(reference "#PWR02")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:D_Schottky")
 		(at 118.11 52.07 90)
 		(unit 1)
@@ -2451,7 +2699,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
+		(property "Datasheet" "https://www.vishay.com/docs/88525/1n5817.pdf"
 			(at 118.11 52.07 0)
 			(effects
 				(font
@@ -2486,7 +2734,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 125.73 66.04 90)
+		(at 125.73 74.93 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -2495,7 +2743,7 @@
 		(fields_autoplaced yes)
 		(uuid "655bbfb0-9527-45c8-9aa8-693b70bac54b")
 		(property "Reference" "#PWR0101"
-			(at 132.08 66.04 0)
+			(at 132.08 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2504,7 +2752,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 129.54 66.0399 90)
+			(at 129.54 74.9299 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2513,7 +2761,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 125.73 66.04 0)
+			(at 125.73 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2522,7 +2770,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 125.73 66.04 0)
+			(at 125.73 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2531,7 +2779,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 125.73 66.04 0)
+			(at 125.73 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2552,6 +2800,79 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:Q_PMOS_GDS")
+		(at 138.43 44.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6b63c3cb-403e-422b-8678-560869def50f")
+		(property "Reference" "QPMOS1"
+			(at 143.637 43.2378 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TSM680P06CH"
+			(at 143.637 45.6621 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_THT:TO-251-3-1EP_Horizontal_TabDown"
+			(at 143.51 41.91 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://services.taiwansemi.com/storage/resources/datasheet/TSM680P06CH_A2204.pdf"
+			(at 138.43 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "P-MOSFET transistor, gate/drain/source"
+			(at 138.43 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "2a1510a2-bcb7-43f0-86d1-6f0e23d27679")
+		)
+		(pin "1"
+			(uuid "e65056c1-e8e6-47cf-b212-2d7411f047e5")
+		)
+		(pin "3"
+			(uuid "f6119304-0a63-45be-bc62-8ef927660043")
+		)
+		(instances
+			(project "CamMotion"
+				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d/00000000-0000-0000-0000-00006263b8ad"
+					(reference "QPMOS1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 123.19 52.07 0)
 		(unit 1)
@@ -2559,7 +2880,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "8b32390c-6487-4ae9-91e0-65186e63f7f3")
 		(property "Reference" "#PWR0102"
 			(at 123.19 58.42 0)
@@ -2571,7 +2891,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 123.19 57.15 0)
+			(at 126.492 52.324 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2618,8 +2938,76 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 121.92 63.5 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "99ec96d4-d0e1-4165-89df-b93fc8680669")
+		(property "Reference" "C2"
+			(at 121.92 57.1965 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10u"
+			(at 121.92 59.6208 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_THT:C_Axial_L5.1mm_D3.1mm_P15.00mm_Horizontal"
+			(at 125.73 62.5348 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 121.92 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 121.92 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0e0bbcb5-00a3-41e1-bfd1-d9314fb5581d")
+		)
+		(pin "2"
+			(uuid "46b2b461-19b3-4822-9aa6-1a2ca643a242")
+		)
+		(instances
+			(project "CamMotion"
+				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d/00000000-0000-0000-0000-00006263b8ad"
+					(reference "C2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Regulator_Linear:LM2937xT")
-		(at 118.11 66.04 90)
+		(at 118.11 74.93 90)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2628,15 +3016,15 @@
 		(dnp no)
 		(uuid "b9c7392f-72ba-4208-8704-b7bc6f53c61f")
 		(property "Reference" "UReg1"
-			(at 111.76 66.04 0)
+			(at 111.76 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "LM3940"
-			(at 114.3 66.04 0)
+		(property "Value" "LD1117"
+			(at 114.3 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2644,7 +3032,7 @@
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_THT:TO-220-3_Vertical"
-			(at 112.395 66.04 0)
+			(at 112.395 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2654,7 +3042,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/lm2937.pdf"
-			(at 119.38 66.04 0)
+			(at 119.38 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2663,7 +3051,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 118.11 66.04 0)
+			(at 118.11 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2684,6 +3072,74 @@
 			(project "CamMotion"
 				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d/00000000-0000-0000-0000-00006263b8ad"
 					(reference "UReg1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 121.92 86.36 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d3194c92-22fd-4f9c-850d-ac77a9458253")
+		(property "Reference" "C1"
+			(at 121.92 80.0565 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100u"
+			(at 121.92 82.4808 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_THT:C_Axial_L5.1mm_D3.1mm_P15.00mm_Horizontal"
+			(at 125.73 85.3948 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 121.92 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 121.92 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "42d8e489-6c0b-42f6-9529-b06701fbeb19")
+		)
+		(pin "2"
+			(uuid "61685805-3277-4f7f-9231-118c66219f84")
+		)
+		(instances
+			(project "CamMotion"
+				(path "/c23062b8-e5be-482c-a7d3-d12c8591941d/00000000-0000-0000-0000-00006263b8ad"
+					(reference "C1")
 					(unit 1)
 				)
 			)

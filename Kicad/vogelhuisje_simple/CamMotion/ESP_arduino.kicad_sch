@@ -902,6 +902,18 @@
 			)
 		)
 	)
+	(hierarchical_label "Vcc"
+		(shape input)
+		(at 55.88 99.06 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "25f038e7-f4d3-4cc7-bb25-a40a41b4e3a5")
+	)
 	(symbol
 		(lib_id "power:GND")
 		(at 55.88 93.98 90)
@@ -1116,7 +1128,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "5ea6de47-bd6a-410f-9281-f4d58448c2e6")
 		(property "Reference" "J1"
 			(at 33.655 92.2993 0)
@@ -1127,7 +1138,7 @@
 			)
 		)
 		(property "Value" "Conn_01x01_Pin"
-			(at 33.655 94.7236 0)
+			(at 33.528 100.076 0)
 			(effects
 				(font
 					(size 1.27 1.27)
